@@ -1,0 +1,28 @@
+.pagedown{
+   float:right
+}
+
+.pagedown li{
+    list-style-type: none;
+    float: left;
+}
+
+.pagedown li>a{
+    width: 30px;
+    height: 30px;
+    display: block;
+    padding: 5px;
+    text-align: center;
+    margin-left: 5px;
+    color:#436EEE;
+    text-decoration:none;
+    cursor:pointer;
+    background: #ccc;
+}
+.pagedown li>a:hover{
+   background: #436EEE; 
+   color:white
+}
+.pagedown button {
+    margin-left: 5px
+}

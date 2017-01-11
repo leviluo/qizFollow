@@ -1,0 +1,1 @@
+webpackJsonp([1],{522:function(e,t,n){"use strict";function u(e){return e&&e.__esModule?e:{default:e}}function l(){return a.default.createElement("div",{style:{textAlign:"center",marginTop:"100px"}},a.default.createElement("h3",null,"欢迎使用奇正辅助交易系统"))}Object.defineProperty(t,"__esModule",{value:!0}),t.default=l;var r=n(1),a=u(r)}});

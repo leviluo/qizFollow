@@ -1,0 +1,82 @@
+body{
+	font-family: "黑体", Helvetica, Arial, "Microsoft Yahei UI", "Microsoft YaHei", SimHei, "\5B8B\4F53", simsun, sans-serif;
+    background-color: #fff;
+    /*overflow-y: scroll;*/
+}
+
+table{
+	font-size:1em;
+	padding:2px;
+}
+
+thead{
+	background-color:#efefef;
+}
+
+th,td{
+	text-align: center;
+	vertical-align:middle !important;
+}
+
+nav .myactive{
+	background:#ccc !important;
+	color:#666 !important;
+};
+a:hover{
+	text-decoration: none
+}
+
+.modal-content{
+border-radius: none !important
+}
+.dropMenu{
+	position: relative;
+	cursor:pointer;
+}
+.dropMenu span{
+	font-size:150%;
+}
+
+.dropMenu:hover ul{
+	display:block;
+}
+.dropMenu:hover span{
+	transform:rotate(180deg);
+}
+
+.dropMenu ul{
+	display:none;
+	position:absolute;
+	top:50px;
+	padding:0;
+	width: 80px;
+	text-align: center;
+	margin:0;
+	left:0;
+	background:#fff;
+	z-index:10;
+	border:1px solid #ccc;
+}
+
+.dropMenu ul li{
+	list-style: none;
+	height:30px;
+	line-height:30px;
+}
+
+.dropMenu ul li:hover{
+	color:blue;
+}
+
+li{
+	list-style: none
+}
+
+li a{
+	display: block;
+}
+
+li a:hover{
+	cursor:pointer;
+	text-decoration:none
+}
