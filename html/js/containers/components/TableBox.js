@@ -55,6 +55,7 @@ export default class TableBox extends Component{
         }
 
         chooseOne =(e,index)=>{
+            // console.log("0000")
             if(!this.props.chooseOne)return
             var elem = e.target.parentNode.parentNode.getElementsByTagName('tr')
             for (var i = 0; i < elem.length; i++) {

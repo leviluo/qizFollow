@@ -77,10 +77,13 @@ export default class tradeManage extends Component {
         }
 
         componentWillReceiveProps =(nextProps) =>{
-            this.setState({
-                    FuturesData:nextProps.FuturesData,
-                     FuturesIDCondition:"",
-                })
+                // this.setState({
+                //      FuturesData:nextProps.FuturesData,
+                //      FuturesIDCondition:"",
+                // })
+               // if(nextProps.FuturesData != this.props.FuturesData){
+                
+               // }
         }
 
 
@@ -368,10 +371,6 @@ export default class tradeManage extends Component {
 
         showAddrInfo = (e) =>{
             let id = e.target.parentNode.getAttribute("value")
-            for (var i = 0; i < e.target.parentNode.parentNode.childNodes.length; i++) {
-                e.target.parentNode.parentNode.childNodes[i].style.background = 'none'
-            };
-            e.target.parentNode.style.background = 'white'
             this.setState({
                 FuturesIDAddr:id,
             })

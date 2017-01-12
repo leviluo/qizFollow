@@ -1,5 +1,6 @@
 import React, { Component, PropTypes } from 'react'
 import PageNavBar from '../PageNavBar'
+import { findDOMNode } from 'react-dom';
 
 export default class CheckTableBox extends Component{
 
@@ -126,6 +127,21 @@ export default class CheckTableBox extends Component{
           }
         }
 
+        batchdelete =(e,items)=>{
+            if(this.props.batchdelete(e,items)){
+               this.setState({
+                    chooseItems:[]
+                }) 
+               console.log(findDOMNode(this))
+               var ele = document.getElementsByName('select')
+               for (var i = 0; i < items.length; i++) {
+                   if(ele[items[i]]){
+                        ele[items[i]].checked = false
+                   }
+               };
+            }
+        }
+
         render() {
             const {tableHeader,data} = this.props
             var headerItems = [< th key="0" style={{width:'15%'}}><input type="checkbox" onClick={this.chooseAll}/>全选</th>];
@@ -167,8 +183,8 @@ export default class CheckTableBox extends Component{
             // console.log(this.props.data)
             return (<span><div className="btn-group pull-right" >
             {this.props.add && <button className="btn btn-primary" style={{margin:'10px 0'}} onClick={(e)=>this.props.add(e,this.state.chooseItems)}>{this.props.addHeader}</button>}
-            {this.props.batchdelete && <button className="btn btn-primary" style={{margin:'10px 0'}} onClick={(e)=>this.props.batchdelete(e,this.state.chooseItems)}>{this.props.batchdeleteHeader}</button>}
             {this.props.batchModify && <button className="btn btn-primary" style={{margin:'10px 0'}} onClick={(e)=>this.props.batchModify(e,this.state.chooseItems)}>{this.props.batchModifyHeader}</button>}
+            {this.props.batchdelete && <button className="btn btn-primary" style={{margin:'10px 0'}} onClick={(e)=>this.batchdelete(e,this.state.chooseItems)}>{this.props.batchdeleteHeader}</button>}
             </div><table className = "table table-hover" ><thead><tr style={{background:'#F0F8FF'}}>{headerItems}</tr></thead><tbody>{items.slice(this.state.averagenum*(currentPage-1),this.state.averagenum*currentPage)}</tbody></table>
                 {!this.props.PageNavBar && <PageNavBar pagego={this.pagego} firstpage={this.firstpage} lastpage={this.lastpage} pageup={this.pageup} pagedown={this.pagedown} pageNums={pageNums} currentPage={currentPage}/>}</span>
                 )

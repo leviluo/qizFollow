@@ -292,12 +292,22 @@ export default class relationManage extends Component {
         }
 
         addContractFilter =(e) =>{
-            // ？？？？
+            if(!this.state.ContractName){
+                this.props.openTips('合约不为空')
+                return
+            }
+            for (var i = 0; i < this.state.contractFilterData.length; i++) {
+                if(this.state.contractFilterData[i].contractid == this.state.ContractName){
+                    this.props.openTips('合约不能重复')
+                    return
+                }
+            };
             this.state.contractFilterData.push({contractid:this.state.ContractName})
             this.setState({})
         }
 
         deleteContractModal =(e,item) =>{
+            console.log(item)
             if (item.length<1) {
                 this.props.openTips('没有选择数据')
                 return
@@ -308,6 +318,7 @@ export default class relationManage extends Component {
                 this.state.contractFilterData.splice(items[i] - (num-this.state.contractFilterData.length),1)
             };
             this.setState({})
+            return true
         }
 
         confirmContractFilter = (e) =>{
@@ -328,14 +339,14 @@ export default class relationManage extends Component {
                     followid:this.props.AccountFollowsData[index].id,
                     confirm:this.submitContractFilter,
                     ConfirmText: <div>
+                       <InputBasic header = "合约名称" handleSelect = {this.ContractNameChange}/>
+                    <button className="btn btn-primary" onClick = {this.addContractFilter}>添加合约过滤</button>
                     <CheckTableBox 
                         batchdelete = {this.deleteContractModal}
                         batchdeleteHeader = "批量删除"
                         tableHeader = {[{key:'contractid',value:'合约'}]} 
                         data={data} />
                     <div style={{textAlign:'left'}}>
-                    <InputBasic header = "合约名称" handleSelect = {this.ContractNameChange}/>
-                    <button className="btn btn-primary" onClick = {this.addContractFilter}>添加合约过滤</button>
                     </div>
                     </div>,
                     contractFilterData:data,
@@ -415,6 +426,13 @@ export default class relationManage extends Component {
             if (isNaN(this.state.Contractratio)) {
                 this.props.openTips('倍率为数字格式')
                 return;
+            };
+
+            for (var i = 0; i < this.state.contractConvertData.length; i++) {
+                if(this.state.contractConvertData[i].contractHost == this.state.ContractHost && this.state.contractConvertData[i].contractFollow == this.state.ContractConvert){
+                    this.props.openTips('合约转换不能重复')
+                    return
+                }
             };
 
             this.state.contractConvertData.push({contractHost:this.state.ContractHost,contractFollow:this.state.ContractConvert,FollowDirection:this.state.ContractDirection,ratio:this.state.Contractratio})
