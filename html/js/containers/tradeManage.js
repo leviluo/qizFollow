@@ -77,10 +77,9 @@ export default class tradeManage extends Component {
         }
 
         componentWillReceiveProps =(nextProps) =>{
-                // this.setState({
-                //      FuturesData:nextProps.FuturesData,
-                //      FuturesIDCondition:"",
-                // })
+                this.setState({
+                     FuturesData:this.filterdata({FuturesIDCondition:this.state.FuturesIDCondition},nextProps.FuturesData),
+                })
                // if(nextProps.FuturesData != this.props.FuturesData){
                 
                // }
@@ -210,22 +209,24 @@ export default class tradeManage extends Component {
             // let index = e.target.name || e.target.getAttribute("name");
             this.setState({
                 open: (this.state.open == true) ? false : true,
-                head:'账户管理--修改',
+                head:'交易系统管理--修改',
                 modalType:0,
-                FuturesName:this.props.FuturesData[index].FuturesName,
-                FuturesID:this.props.FuturesData[index].FuturesID,
-                BrokerID:this.props.FuturesData[index].BrokerID,
-                ApiType:this.props.FuturesData[index].ApiType,
-                AuthCode:this.props.FuturesData[index].AuthCode,
-                AuthType:this.props.FuturesData[index].AuthType,
+                FuturesName:this.state.FuturesData[index].FuturesName,
+                FuturesID:this.state.FuturesData[index].FuturesID,
+                BrokerID:this.state.FuturesData[index].BrokerID,
+                ApiType:this.state.FuturesData[index].ApiType,
+                AuthCode:this.state.FuturesData[index].AuthCode,
+                AuthType:this.state.FuturesData[index].AuthType,
                 content:(<form>
-                                <InputBox header = '交易系统名称' indeed={true} defaultValue={this.props.FuturesData[index].FuturesName} handleSelect = {this.FuturesChange}/>
-                                <InputBox header = '经纪公司代码' indeed={true} defaultValue={this.props.FuturesData[index].BrokerID} handleSelect = {this.BrokerChange}/>
-                                <SelectBox header = "接口类型" indeed={true} defaultValue={this.props.FuturesData[index].ApiType} items={apiTypes} handleSelect ={this.ApiTypeChange}/>
-                                <SelectBox header = "授权类型" indeed={true} defaultValue={this.props.FuturesData[index].AuthType} items={authTypes} handleSelect ={this.AuthTypeChange}/>
-                                {this.props.FuturesData[index].AuthType == 1 && <InputBox header = '授权码' defaultValue={this.props.FuturesData[index].AuthCode} handleSelect = {this.AuthCodeChange}/>}
+                                <InputBox header = '交易系统名称' indeed={true} defaultValue={this.state.FuturesData[index].FuturesName} handleSelect = {this.FuturesChange}/>
+                                <InputBox header = '经纪公司代码' indeed={true} defaultValue={this.state.FuturesData[index].BrokerID} handleSelect = {this.BrokerChange}/>
+                                <SelectBox header = "接口类型" indeed={true} defaultValue={this.state.FuturesData[index].ApiType} items={apiTypes} handleSelect ={this.ApiTypeChange}/>
+                                <SelectBox header = "授权类型" indeed={true} defaultValue={this.state.FuturesData[index].AuthType} items={authTypes} handleSelect ={this.AuthTypeChange}/>
+                                {this.state.FuturesData[index].AuthType == 1 && <InputBox header = '授权码' defaultValue={this.props.FuturesData[index].AuthCode} handleSelect = {this.AuthCodeChange}/>}
                         </form>),
             });
+            // e.stopPropagation();
+            // e.preventDefault();
         }
 
         modifyAddrModal = (index) => {
@@ -252,12 +253,12 @@ export default class tradeManage extends Component {
             // e.stopPropagation();
             this.setState({
                 deleteurl:'admin/delFuturesData',
-                deleteObject:this.props.FuturesData,
+                deleteObject:this.state.FuturesData,
 				modalType:0,
-                deleteid:this.props.FuturesData[index].FuturesID,
+                deleteid:this.state.FuturesData[index].FuturesID,
                 deleteindex:index,
                 openConfirms: (this.state.openConfirms == true) ? false : true,
-                ConfirmText:`确认要删除交易系统 "${this.props.FuturesData[index].FuturesName}" 吗?`,
+                ConfirmText:`确认要删除交易系统 "${this.state.FuturesData[index].FuturesName}" 吗?`,
             })
         }
 
@@ -311,7 +312,7 @@ export default class tradeManage extends Component {
             }
             this.props.operateDataQuote('admin/FuturesData',`${body}${addon}`)
             } else if(this.state.modalType==1){
-                if (!this.state.IP) {
+                if (!/[\d\.]/.test(this.state.IP)) {
                 this.props.openTips("未填写地址")
                 return;
                 }
@@ -321,7 +322,7 @@ export default class tradeManage extends Component {
                 return;
                 }
 
-                if (!this.state.Port || typeof this.state.Port != 'number' && (this.state.Port % 1 != 0)) {
+                if (this.state.Port > 70000 || !this.state.Port || typeof this.state.Port != 'number' && (this.state.Port % 1 != 0) ) {
                     this.props.openTips("未填写端口或端口格式不正确")
                     return;
                 }
@@ -396,6 +397,7 @@ export default class tradeManage extends Component {
         }
 
         render() {
+            // console.log(this.state.FuturesData)
             return <div>{ this.props.Tips.tipstate && <Tip text={this.props.Tips.tipText} update={this.updateView}/> }
             <button className = "btn btn-primary pull-right" onClick={this.addModal} style={{marginBottom:'5px'}}> 添加 < /button> 
             <SelectBoxCondition header = "交易系统" items={this.props.quote} selectValue="" handleSelect ={this.futuresChangeStatus}/>

@@ -22,19 +22,23 @@ function AccountData()
 
 	local result = publicMethod.getOnedata_nil("select * from Account where Account = '"..value['Account'].."' and AccountID != "..value['AccountID'].."");
 	if (next(result) == nil) then
+
 		if value['operateType'] == 'ADD' then
-		publicMethod.operateOnedata("insert into Account(`Account`,`Status`,`Password`,`accountName`,`AccountType`,`FuturesID`,`Remark`,`updatetime`) values('"..value['Account'].."','"..value['Status'].."','"..value['Password'].."','"..value['accountName'].."','"..value['AccountType'].."',"..value['FuturesID']..",'"..value['Remark'].."',now());","添加成功")
+			publicMethod.operateOnedata("insert into Account(`Account`,`Status`,`Password`,`accountName`,`AccountType`,`FuturesID`,`Remark`,`updatetime`) values('"..value['Account'].."','"..value['Status'].."','"..value['Password'].."','"..value['accountName'].."','"..value['AccountType'].."',"..value['FuturesID']..",'"..value['Remark'].."',now());","添加成功")
 		elseif value['operateType'] == 'MODIFY' then
-
-		
-		local result = publicMethod.getOnedata_nil("select * from AccountFollow where HostAccountID = "..value['AccountID'].." or FollowAccountID = "..value['AccountID'].."");
-		if(next(result) == nil) then
-		publicMethod.operateOnedata("update Account set Account='"..value['Account'].."',Status='"..value['Status'].."',Password='"..value['Password'].."',accountName='"..value['accountName'].."',AccountType='"..value['AccountType'].."',Remark='"..value['Remark'].."',updatetime=now(),FuturesID="..value['FuturesID'].." where AccountID = "..value['AccountID']..";","修改成功")
-		else 
-		printInfo(-13, "该账户存在关联关系,请先删除此关系");
+			local result = publicMethod.getOnedata_nil("select * from Account where AccountID = "..value['AccountID'].." and AccountType = '"..value['AccountType'].."';")
+			if next(result) == nil then
+				local result = publicMethod.getOnedata_nil("select * from AccountFollow where HostAccountID = "..value['AccountID'].." or FollowAccountID = "..value['AccountID'].."");
+				if(next(result) == nil) then
+					publicMethod.operateOnedata("update Account set Account='"..value['Account'].."',Status='"..value['Status'].."',Password='"..value['Password'].."',accountName='"..value['accountName'].."',AccountType='"..value['AccountType'].."',Remark='"..value['Remark'].."',updatetime=now(),FuturesID="..value['FuturesID'].." where AccountID = "..value['AccountID']..";","修改成功")
+					return
+				end 
+				printInfo(-13, "该账户存在关联关系,请先删除此关系");
+			else 
+				publicMethod.operateOnedata("update Account set Account='"..value['Account'].."',Status='"..value['Status'].."',Password='"..value['Password'].."',accountName='"..value['accountName'].."',Remark='"..value['Remark'].."',updatetime=now(),FuturesID="..value['FuturesID'].." where AccountID = "..value['AccountID']..";","修改成功")
+			end
 		end
 
-		end
 	else
 	printInfo(-11, "账户名重复");
 	end;
@@ -144,7 +148,7 @@ function Configs()
 		OrderLimitDelay = value['OrderLimitDelay']
 	end
 
-	publicMethod.operateOnedata("update Config set KeyValue = case KeyName when 'OpenPriceTick' then '"..OpenPriceTick.."' when 'ClosePriceTick' then '"..ClosePriceTick.."' when 'OrderLimitDelay' then '"..OrderLimitDelay.."' end where KeyName in ('ClosePriceTick','OrderLimitDelay','ClosePriceTick')","更新成功")
+	publicMethod.operateOnedata("update Config set KeyValue = case KeyName when 'OpenPriceTick' then '"..OpenPriceTick.."' when 'ClosePriceTick' then '"..ClosePriceTick.."' when 'OrderLimitDelay' then '"..OrderLimitDelay.."' end where KeyName in ('OpenPriceTick','OrderLimitDelay','ClosePriceTick')","更新成功")
 
 end
 

@@ -64,6 +64,16 @@ export default class groupSetting extends Component {
 
         addContractFilter =(e) =>{
             // ？？？？
+            if(!this.state.ContractName){
+                this.props.openTips('合约不为空')
+                return
+            }
+            for (var i = 0; i < this.state.contractFilterData.length; i++) {
+                if(this.state.contractFilterData[i].contractid == this.state.ContractName){
+                    this.props.openTips('合约不能重复')
+                    return
+                }
+            };
             this.state.contractFilterData.push({contractid:this.state.ContractName})
             this.setState({})
         }
@@ -99,6 +109,10 @@ export default class groupSetting extends Component {
                         batchdeleteHeader = "批量删除"
                         tableHeader = {[{key:'contractid',value:'合约'}]} 
                         data={data} />
+                        <br/>
+                        <br/>
+                        <br/>
+                    <div style={{color:"red"}}>提示：当合约为空提交时，会删除所有原有合约过滤，请谨慎确认提交</div>
                     </div>,
                     contractFilterData:data,
                     openConfirms:this.state.openConfirms ? false : true,
@@ -155,7 +169,7 @@ export default class groupSetting extends Component {
                 return
             };
             // console.log(this.state.Contractratio)
-            if (!this.state.Contractratio && this.state.Contractratio!==0) {
+            if (!(this.state.Contractratio > 0)) {
                 this.props.openTips('没有填写比率')
                 return;
             }
@@ -163,6 +177,13 @@ export default class groupSetting extends Component {
             if (isNaN(this.state.Contractratio)) {
                 this.props.openTips('倍率为数字格式')
                 return;
+            };
+
+            for (var i = 0; i < this.state.contractConvertData.length; i++) {
+                if(this.state.contractConvertData[i].contractHost == this.state.ContractHost && this.state.contractConvertData[i].contractFollow == this.state.ContractConvert){
+                    this.props.openTips('合约转换不能重复')
+                    return
+                }
             };
 
             this.state.contractConvertData.push({contractHost:this.state.ContractHost,contractFollow:this.state.ContractConvert,FollowDirection:this.state.ContractDirection,ratio:this.state.Contractratio})
@@ -190,7 +211,7 @@ export default class groupSetting extends Component {
                           <InputBox header = '转换合约' indeed={true}  handleSelect = {this.ContractConvert}/>  
                           <RadioBox header = '方向' name="ContractDirection" defaultValue="0" indeed={true} items={followdirections} handleRadio = {this.ContractDirection}/>
                           <InputBox header = '倍率' indeed={true}  handleSelect = {this.Contractratio}/>  
-                          <button className="btn btn-primary" onClick={this.addContractConvert}>添加</button>
+                          <button className="btn btn-primary pull-right" style={{marginBottom:"20px"}} onClick={this.addContractConvert}>添加</button>
                     </div>,
                     confirm:this.confirmContractConvert,
                     contractConvertData:data
@@ -231,10 +252,10 @@ export default class groupSetting extends Component {
 
         confirmContractConvert =(e)=>{
             // alert("")
-            if (this.state.contractConvertData.length < 1) {
-              this.props.openTips("没有添加合约转换")
-                return
-            };
+            // if (this.state.contractConvertData.length < 1) {
+            //   this.props.openTips("没有添加合约转换")
+            //     return
+            // };
             var data = this.state.contractConvertData
             var str = ''
             for (var i = 0; i < data.length; i++) {
@@ -247,10 +268,10 @@ export default class groupSetting extends Component {
         }
 
         confirmContractFilter = (e) =>{
-          if (this.state.contractFilterData.length < 1) {
-            this.props.openTips("没有添加合约")
-              return
-          };
+          // if (this.state.contractFilterData.length < 1) {
+          //   this.props.openTips("没有添加合约")
+          //     return
+          // };
             var str = '';
             for (var i = 0; i < this.state.contractFilterData.length; i++) {
                 str += this.state.contractFilterData[i].contractid + ','

@@ -235,11 +235,11 @@ export default class relationManage extends Component {
             let FollowAccounts = [];
 
             for (var i = 0; i < this.props.AccountsData.length; i++) {
-                if(this.props.AccountsData[i].FuturesName == this.props.AccountFollowsData[index].HostFuturesName && this.props.AccountsData[i].AccountType == 0){
+                if(this.props.AccountsData[i].FuturesName == this.state.AccountFollowsData[index].HostFuturesName && this.props.AccountsData[i].AccountType == 0){
                     HostAccounts.push(this.props.AccountsData[i]);
                     continue;
                 }
-                if(this.props.AccountsData[i].FuturesName == this.props.AccountFollowsData[index].FollowFuturesName && this.props.AccountsData[i].AccountType == 1){
+                if(this.props.AccountsData[i].FuturesName == this.state.AccountFollowsData[index].FollowFuturesName && this.props.AccountsData[i].AccountType == 1){
                     FollowAccounts.push(this.props.AccountsData[i]);
                     continue;
                 }
@@ -251,24 +251,24 @@ export default class relationManage extends Component {
                 open: (this.state.open == true) ? false : true,
                 head:'主从关系配置--修改',
                 submitData:this.submitData,
-                FollowAccountID:this.props.AccountFollowsData[index].FollowAccountID,
-                FollowDirection:this.props.AccountFollowsData[index].FollowDirection,
-                FollowRatio:this.props.AccountFollowsData[index].FollowRatio,
-                Remark:this.props.AccountFollowsData[index].Remark,
-                FollowaccountName:this.props.AccountFollowsData[index].FollowaccountName,
-                HostAccountID:this.props.AccountFollowsData[index].HostAccountID,
-                Status:this.props.AccountFollowsData[index].Status,
-                hostaccountName:this.props.AccountFollowsData[index].hostaccountName,
-                AccountFollowID:this.props.AccountFollowsData[index].id,
+                FollowAccountID:this.state.AccountFollowsData[index].FollowAccountID,
+                FollowDirection:this.state.AccountFollowsData[index].FollowDirection,
+                FollowRatio:this.state.AccountFollowsData[index].FollowRatio,
+                Remark:this.state.AccountFollowsData[index].Remark,
+                FollowaccountName:this.state.AccountFollowsData[index].FollowaccountName,
+                HostAccountID:this.state.AccountFollowsData[index].HostAccountID,
+                Status:this.state.AccountFollowsData[index].Status,
+                hostaccountName:this.state.AccountFollowsData[index].hostaccountName,
+                AccountFollowID:this.state.AccountFollowsData[index].id,
                 content:(<form>
-                                <SelectBox header = "主期货公司" indeed={true} defaultValue={this.props.AccountFollowsData[index].HostFuturesName} items={this.props.HostFuturesData} handleSelect ={this.HostFuturesChange}/>
-                                <SelectBox id="HostAccounts" header = "主账户" indeed={true} defaultValue={this.props.AccountFollowsData[index].HostAccountID} items={HostAccounts} handleSelect ={this.HostAccountsChange}/>
-                                <SelectBox header = "从期货公司" indeed={true} defaultValue={this.props.AccountFollowsData[index].FollowFuturesName} items={this.props.FollowFuturesData} handleSelect ={this.FollowFuturesChange}/>
-                                <SelectBox id="FollowAccounts" header = "从账户" indeed={true} defaultValue={this.props.AccountFollowsData[index].FollowAccountID} items={FollowAccounts} handleSelect ={this.FollowAccountsChange}/>
-                                <RadioBox header = '跟单方向' name="FollowDirection" indeed={true} defaultValue={this.props.AccountFollowsData[index].FollowDirection} items={followdirections} handleRadio = {this.FollowDirectionChange}/>
-                                <InputBox header = '跟单比率' indeed={true} defaultValue={this.props.AccountFollowsData[index].FollowRatio} handleSelect = {this. FollowRatioChange}/>
-                                <RadioBox header = '状态' name="Status" indeed={true} defaultValue={this.props.AccountFollowsData[index].Status} items={statusitems} handleRadio = {this.StatusChange}/>
-                                <TextareaBox header = '备注' defaultValue={this.props.AccountFollowsData[index].Remark} handleSelect = {this.RemarkChange}/>
+                                <SelectBox header = "主期货公司" indeed={true} defaultValue={this.state.AccountFollowsData[index].HostFuturesName} items={this.props.HostFuturesData} handleSelect ={this.HostFuturesChange}/>
+                                <SelectBox id="HostAccounts" header = "主账户" indeed={true} defaultValue={this.state.AccountFollowsData[index].HostAccountID} items={HostAccounts} handleSelect ={this.HostAccountsChange}/>
+                                <SelectBox header = "从期货公司" indeed={true} defaultValue={this.state.AccountFollowsData[index].FollowFuturesName} items={this.props.FollowFuturesData} handleSelect ={this.FollowFuturesChange}/>
+                                <SelectBox id="FollowAccounts" header = "从账户" indeed={true} defaultValue={this.state.AccountFollowsData[index].FollowAccountID} items={FollowAccounts} handleSelect ={this.FollowAccountsChange}/>
+                                <RadioBox header = '跟单方向' name="FollowDirection" indeed={true} defaultValue={this.state.AccountFollowsData[index].FollowDirection} items={followdirections} handleRadio = {this.FollowDirectionChange}/>
+                                <InputBox header = '跟单比率' indeed={true} defaultValue={this.state.AccountFollowsData[index].FollowRatio} handleSelect = {this. FollowRatioChange}/>
+                                <RadioBox header = '状态' name="Status" indeed={true} defaultValue={this.state.AccountFollowsData[index].Status} items={statusitems} handleRadio = {this.StatusChange}/>
+                                <TextareaBox header = '备注' defaultValue={this.state.AccountFollowsData[index].Remark} handleSelect = {this.RemarkChange}/>
                         </form>)
             });
         }
@@ -276,12 +276,12 @@ export default class relationManage extends Component {
         deleteModal = (index) => {
             this.setState({
                 deleteurl:'AccountFollows/delAccountFollowData',
-                deleteObject:this.props.AccountFollowsData,
-                deleteid:this.props.AccountFollowsData[index].id,
+                deleteObject:this.state.AccountFollowsData,
+                deleteid:this.state.AccountFollowsData[index].id,
                 deleteindex:index,
                 confirm:this.confirm,
                 openConfirms:this.state.openConfirms ? false : true,
-                ConfirmText:`确认要删除"主账户:${this.props.AccountFollowsData[index].HostAccount}" 和 "从账户:${this.props.AccountFollowsData[index].FollowAccount}" 的关系吗?`,
+                ConfirmText:`确认要删除"主账户:${this.state.AccountFollowsData[index].HostAccount}" 和 "从账户:${this.state.AccountFollowsData[index].FollowAccount}" 的关系吗?`,
             })
         }
 
@@ -333,10 +333,10 @@ export default class relationManage extends Component {
         }
 
         queryContractFilter =(index)=>{
-            fetchData('AccountFollows/getContractFilter',`followid=${this.props.AccountFollowsData[index].id}`).then((res)=>res.json()).then((result)=>{
+            fetchData('AccountFollows/getContractFilter',`followid=${this.state.AccountFollowsData[index].id}`).then((res)=>res.json()).then((result)=>{
                 var data = result.id ? [] : result;
                 this.setState({
-                    followid:this.props.AccountFollowsData[index].id,
+                    followid:this.state.AccountFollowsData[index].id,
                     confirm:this.submitContractFilter,
                     ConfirmText: <div>
                        <InputBasic header = "合约名称" handleSelect = {this.ContractNameChange}/>
@@ -418,8 +418,8 @@ export default class relationManage extends Component {
                 return
             };
             // console.log(this.state.Contractratio)
-            if (!this.state.Contractratio && this.state.Contractratio!==0) {
-                this.props.openTips('没有填写比率')
+            if (!(this.state.Contractratio > 0)) {
+                this.props.openTips('比率大于0')
                 return;
             }
 
@@ -468,8 +468,8 @@ export default class relationManage extends Component {
             })
             var _this = this;
             function summitModifyConvert(){
-                if (!_this.state.modifyContractratio && _this.state.modifyContractratio!==0) {
-                _this.props.openTips('没有填写比率')
+                if (!(_this.state.modifyContractratio > 0)) {
+                _this.props.openTips('比率大于0')
                 return;
                 }
 
@@ -493,12 +493,12 @@ export default class relationManage extends Component {
 
         queryContractConvert =(index)=>{ //合约转换窗口
             // alert(index)
-            fetchData('AccountFollows/getContractConvert',`followid=${this.props.AccountFollowsData[index].id}`).then((res)=>res.json()).then((result)=>{
+            fetchData('AccountFollows/getContractConvert',`followid=${this.state.AccountFollowsData[index].id}`).then((res)=>res.json()).then((result)=>{
                 var data = result.id ? [] : result;
                 this.setState({
-                    followid:this.props.AccountFollowsData[index].id,
+                    followid:this.state.AccountFollowsData[index].id,
                     confirm:this.submitContractConvert,
-                    ConfirmText: <div style={{textAlign:'left'}}>
+                    ConfirmText: <div style={{textAlign:'left',marginBottom:"10px"}}>
                         <CheckTableBox 
                             batchdelete = {this.deleteContractConvertModal}
                             batchdeleteHeader = "批量删除"
@@ -512,7 +512,7 @@ export default class relationManage extends Component {
                           <InputBox header = '转换合约' indeed={true}  handleSelect = {this.ContractConvert}/>  
                           <RadioBox header = '方向' name="ContractDirection" defaultValue="0" indeed={true} items={followdirections} handleRadio = {this.ContractDirection}/>
                           <InputBox header = '倍率' indeed={true}  handleSelect = {this.Contractratio}/>  
-                          <button className="btn btn-primary" onClick={this.addContractConvert}>添加</button>
+                          <button className="btn btn-primary pull-right" style={{marginBottom:"20px"}} onClick={this.addContractConvert}>添加</button>
                     </div>,
                     contractConvertData:data,
                     openConfirms:this.state.openConfirms ? false : true
@@ -539,8 +539,8 @@ export default class relationManage extends Component {
                 return;
             }
 
-            if (!this.state.FollowRatio && this.state.FollowRatio!==0) {
-                this.props.openTips('未填写跟单比率')
+            if (!(this.state.FollowRatio > 0)) {
+                this.props.openTips('跟单比率大于0')
                 return;
             }
 

@@ -70,7 +70,7 @@ export default class CheckTableBox extends Component{
             var color = '#fff'
             var flag = false;
           }
-          var items = document.getElementsByName('select')
+          var items = findDOMNode(this).getElementsByClassName('checktablebox')
           for (var i = 0; i < items.length; i++) {
             items[i].checked = flag
             items[i].parentNode.parentNode.style.background = color
@@ -132,8 +132,8 @@ export default class CheckTableBox extends Component{
                this.setState({
                     chooseItems:[]
                 }) 
-               console.log(findDOMNode(this))
-               var ele = document.getElementsByName('select')
+               // console.log(findDOMNode(this))
+               var ele = findDOMNode(this).getElementsByClassName('checktablebox')
                for (var i = 0; i < items.length; i++) {
                    if(ele[items[i]]){
                         ele[items[i]].checked = false
@@ -172,7 +172,7 @@ export default class CheckTableBox extends Component{
                                 tds.push(<td key={j+1}>{data[i][tableHeader[j].key]}</td>)
                             };
 
-                            tds.unshift(<td key="0"><input type="checkbox" name="select" onClick={(e)=>this.chooseMulti(e,i)}/></td>)
+                            tds.unshift(<td key="0"><input type="checkbox" className="checktablebox" onClick={(e)=>this.chooseMulti(e,i)}/></td>)
                             items.push(<tr key={i} onMouseOver={(e)=>this.showButton(e,i)} onMouseLeave={this.hiddenButton} onClick={(e)=>this.chooseOne(e,i)}>{tds}</tr>)
                     })(i)
                 };

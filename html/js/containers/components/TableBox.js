@@ -5,10 +5,31 @@ export default class TableBox extends Component{
 
         state = {
             currentPage:1,
+            averagenum:5
         }    
 
         componentDidUpdate =() =>{//更新搜索条件后页面重新初始化
 
+        }
+        componentWillMount =()=>{
+            this.setState({
+                pageNums: Math.ceil(this.props.data.length/this.state.averagenum)
+            })
+        }
+
+
+        componentWillReceiveProps =(nextProps)=>{
+            var pageNums = Math.ceil(nextProps.data.length/this.state.averagenum)
+            if (this.state.currentPage > pageNums) {
+                this.setState({
+                    pageNums:pageNums,
+                    currentPage:1,
+                })
+            }else{
+                this.setState({
+                    pageNums:pageNums
+                })
+            } 
         }
 
         pageup = (e)=>{
@@ -55,7 +76,7 @@ export default class TableBox extends Component{
         }
 
         chooseOne =(e,index)=>{
-            // console.log("0000")
+            if(e.target.tagName == "BUTTON")return
             if(!this.props.chooseOne)return
             var elem = e.target.parentNode.parentNode.getElementsByTagName('tr')
             for (var i = 0; i < elem.length; i++) {
@@ -66,7 +87,7 @@ export default class TableBox extends Component{
         }
 
         render() {
-            const averagenum = 5;
+            const averagenum = this.state.averagenum;
             var tableHeader = [];
             for (var i = 0; i < this.props.tableHeader.length; i++) {
                 tableHeader.push( < th key={i}> { this.props.tableHeader[i].value } < /th>);
@@ -84,10 +105,6 @@ export default class TableBox extends Component{
                                 array.push(<td key = {j} name={i} >{this.props.tableHeader[j].selectedView[this.props.data[i][this.props.tableHeader[j].key]]}</td>);
                                 continue;
                             };
-                            // if (this.props.tableHeader[j].key=='delete') {
-                            //     array.push(<td key = {j} name={i}>< button className = "btn btn-default" value={i} name={this.props.data[i].AccountID || this.props.data[i].id || this.props.data[i].FuturesID} onClick={this.props.deleteModal}> 删除 < /button> </td>)
-                            //     continue;
-                            // }
                             if (this.props.tableHeader[j].extendsMethod) {
                                 array.push(<td key = {j} name={i} >{ this.props.tableHeader[j].extendsMethod(this.props.data[i][this.props.tableHeader[j].key],i) }</td>)
                                 continue;
@@ -98,10 +115,9 @@ export default class TableBox extends Component{
                     })(i)
                 }
             }; 
-                let currentPage = this.state.currentPage;
-                let pageNums = Math.ceil(items.length/averagenum);
-                return (<div><table className = "table table-hover" ><thead><tr style={{background:'rgb(240, 248, 255)'}}>{tableHeader}</tr></thead><tbody>{items.slice(averagenum*(currentPage-1),averagenum*currentPage)}</tbody></table>
-                    {!this.props.PageNavBar && <PageNavBar pagego={this.pagego} firstpage={this.firstpage} lastpage={this.lastpage} pageup={this.pageup} pagedown={this.pagedown} pageNums={pageNums} currentPage={currentPage}/>}</div>
+                // console.log(this.state.pageNums)
+                return (<div><table className = "table table-hover" ><thead><tr style={{background:'rgb(240, 248, 255)'}}>{tableHeader}</tr></thead><tbody>{items.slice(averagenum*(this.state.currentPage-1),averagenum*this.state.currentPage)}</tbody></table>
+                    {!this.props.PageNavBar && <PageNavBar pagego={this.pagego} firstpage={this.firstpage} lastpage={this.lastpage} pageup={this.pageup} pagedown={this.pagedown} pageNums={this.state.pageNums} currentPage={this.state.currentPage}/>}</div>
                 )
             }
 }

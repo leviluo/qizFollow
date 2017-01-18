@@ -8,7 +8,6 @@ export default function auth(state = {
     isFetching: false,
     isAuthenticated: localStorage.getItem('id_token') ? true : false
   }, action) {
-  console.log(action.type)
   switch (action.type) {
     case LOGIN_REQUEST:
       return objectAssign({}, state, {

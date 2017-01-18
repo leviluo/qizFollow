@@ -73,12 +73,18 @@ export default class accountManage extends Component {
             ]
         }
 
-        componentWillReceiveProps =(nextProps) =>{
-            this.setState({
-                    data:nextProps.dataQuoteResult,
-                    FuturesIDCondition:"",
-                    AccountTypeCondition:"",
+        componentWillReceiveProps = (nextProps) =>{
+            // console.log(nextProps)
+            // if (this.state.FuturesIDCondition) {
+                this.setState({
+                    data:this.filterdata({FuturesIDCondition:this.state.FuturesIDCondition},nextProps.dataQuoteResult),
                 })
+            // };
+            // if (this.state.AccountTypeCondition) {
+                this.setState({
+                    data:this.filterdata({AccountTypeCondition:this.state.AccountTypeCondition},nextProps.dataQuoteResult),
+                })
+            // };
         }
 
         accountChange = (e) => {
@@ -144,22 +150,22 @@ export default class accountManage extends Component {
             this.setState({
                 open: (this.state.open == true) ? false : true,
                 head:'账户管理--修改',
-                AccountID:this.props.dataQuoteResult[index].AccountID,
-                FuturesID:this.props.dataQuoteResult[index].FuturesID,
-                Status:this.props.dataQuoteResult[index].Status,
-                AccountType:this.props.dataQuoteResult[index].AccountType,
-                Remark:this.props.dataQuoteResult[index].Remark,
-                Account:this.props.dataQuoteResult[index].Account,
-                Password:this.props.dataQuoteResult[index].Password,
-                accountName:this.props.dataQuoteResult[index].accountName,
+                AccountID:this.state.data[index].AccountID,
+                FuturesID:this.state.data[index].FuturesID,
+                Status:this.state.data[index].Status,
+                AccountType:this.state.data[index].AccountType,
+                Remark:this.state.data[index].Remark,
+                Account:this.state.data[index].Account,
+                Password:this.state.data[index].Password,
+                accountName:this.state.data[index].accountName,
                 content:(<form>
-                                <SelectBox header = "交易系统" indeed={true} items={this.props.quote} defaultValue={this.props.dataQuoteResult[index].FuturesID} handleSelect ={this.futuresChange}/>
-                                <InputBox header = '账户' indeed={true} defaultValue={this.props.dataQuoteResult[index].Account} handleSelect = {this.accountChange}/>
-                                <InputBox header = '别名' defaultValue={this.props.dataQuoteResult[index].accountName} handleSelect = {this.accountNameChange}/>
-                                <RadioBox header = '状态' name="status" indeed={true} items={statusitems} defaultValue = {this.props.dataQuoteResult[index].Status} handleRadio = {this.statusChange}/>
-                                <InputBox header = '密码' indeed={true} defaultValue={this.props.dataQuoteResult[index].Password} handleSelect = {this.passwordChange}/>
-                                <RadioBox header = '类型' name="type" indeed={true} items={accounttypes} defaultValue = {this.props.dataQuoteResult[index].AccountType} handleRadio = {this.typeChange}/>
-                                <TextareaBox header = '备注' defaultValue={this.props.dataQuoteResult[index].Remark} handleTextarea = {this.textareaChange}/>
+                                <SelectBox header = "交易系统" indeed={true} items={this.props.quote} defaultValue={this.state.data[index].FuturesID} handleSelect ={this.futuresChange}/>
+                                <InputBox header = '账户' indeed={true} defaultValue={this.state.data[index].Account} handleSelect = {this.accountChange}/>
+                                <InputBox header = '别名' defaultValue={this.state.data[index].accountName} handleSelect = {this.accountNameChange}/>
+                                <RadioBox header = '状态' name="status" indeed={true} items={statusitems} defaultValue = {this.state.data[index].Status} handleRadio = {this.statusChange}/>
+                                <InputBox header = '密码' indeed={true} defaultValue={this.state.data[index].Password} handleSelect = {this.passwordChange}/>
+                                <RadioBox header = '类型' name="type" indeed={true} items={accounttypes} defaultValue = {this.state.data[index].AccountType} handleRadio = {this.typeChange}/>
+                                <TextareaBox header = '备注' defaultValue={this.state.data[index].Remark} handleTextarea = {this.textareaChange}/>
                         </form>),
             });
         }
@@ -167,11 +173,11 @@ export default class accountManage extends Component {
         deleteModal = (index) => {
             this.setState({
                 deleteurl:'admin/delAccountData',
-                deleteObject:this.props.dataQuoteResult,
-                deleteid:this.props.dataQuoteResult[index].AccountID,
+                deleteObject:this.state.data,
+                deleteid:this.state.data[index].AccountID,
                 deleteindex:index,
                 openConfirms: (this.state.openConfirms == true) ? false : true,
-                ConfirmText:`确认要删除账户"${this.props.dataQuoteResult[index].Account}" 吗?`,
+                ConfirmText:`确认要删除账户"${this.state.data[index].Account}" 吗?`,
             })
         }
 
@@ -195,6 +201,10 @@ export default class accountManage extends Component {
                 this.props.openTips('未填写密码')
                 return;
             }
+            if (this.state.Remark.length > 48) {
+                this.props.openTips('备注不超过50个字符')
+                return;
+            }
             let body = "Account="+this.state.Account+"&Status="+this.state.Status+"&Password="+this.state.Password+"&accountName="+this.state.accountName+"&AccountType="+this.state.AccountType+"&FuturesID="+this.state.FuturesID+"&Remark="+this.state.Remark;
             if(this.state.head == '账户管理--添加'){
                 var addon = "&operateType=ADD"
@@ -209,11 +219,8 @@ export default class accountManage extends Component {
             this.props.operateDataQuote('admin/AccountData',`${body}${addon}`)
         }
 
-        // componentWillUpdate() {
-          
-        // } 
-
-        filterdata = (type)=>{
+        filterdata = (type,dataa)=>{
+            // console.log(dataa)
             if (type.FuturesIDCondition != undefined) {
                 var FuturesIDCondition = type.FuturesIDCondition
                 var AccountTypeCondition = this.state.AccountTypeCondition
@@ -221,7 +228,7 @@ export default class accountManage extends Component {
                 var AccountTypeCondition = type.AccountTypeCondition
                 var FuturesIDCondition = this.state.FuturesIDCondition
             };
-            var data = this.props.dataQuoteResult.concat();
+            var data = dataa.concat();
             var num = data.length
             for (var i = 0; i < num; i++) {
                 var index = i-(num-data.length)
@@ -229,6 +236,7 @@ export default class accountManage extends Component {
                     data.splice(index,1)
                 }
             };
+            // console.log(data)
             return data
         }
 
@@ -236,7 +244,7 @@ export default class accountManage extends Component {
             var value = e.target.value
             this.setState({
                 FuturesIDCondition:value,
-                data:this.filterdata({FuturesIDCondition:value})
+                data:this.filterdata({FuturesIDCondition:value},this.props.dataQuoteResult)
             })
         }
 
@@ -250,7 +258,7 @@ export default class accountManage extends Component {
             }
             this.setState({
                 AccountTypeCondition:value,
-                data:this.filterdata({AccountTypeCondition:value})
+                data:this.filterdata({AccountTypeCondition:value},this.props.dataQuoteResult)
             })
         }
 

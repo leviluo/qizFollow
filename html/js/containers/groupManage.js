@@ -69,7 +69,7 @@ export default class groupManage extends Component {
                 deleteitems:items,
                 openConfirms:this.state.openConfirms ? false : true,
                 ConfirmText:`确认要删除这些组吗?`,
-            })
+          })
         }
         //修改数据
         modifyModal =(index)=>{
@@ -92,26 +92,29 @@ export default class groupManage extends Component {
           }else{
           this.props.operateDataQuote('Groups/modifyGroups',`name=${this.state.groupName}&id=${this.state.modifyid}`)
           }
-          
+          this.setState({
+            open:false,
+            // openConfirms:false
+          })
         }
 
         updateView =()=>{
           this.props.fetchGroups('Groups/GroupsData')
-          this.setState({
-            open:false,
-            openConfirms:false
-          })
         }
 
         confirm =()=>{
           var ids = ''
-          console.log(this.state.deleteitems)
+
           for (var i = 0; i < this.state.deleteitems.length; i++) {
             console.log(this.props.GroupsData[this.state.deleteitems[i]])
             ids += this.props.GroupsData[this.state.deleteitems[i]].id + ','
           };
-          console.log(ids.slice(0,-1))
+
           this.props.operateDataQuote('Groups/deleteGroups',`id=${ids.slice(0,-1)}`)
+          this.setState({
+            // open:false,
+            openConfirms:false
+          })
         }
 
         render() {
