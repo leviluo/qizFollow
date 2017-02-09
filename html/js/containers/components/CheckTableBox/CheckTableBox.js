@@ -150,23 +150,26 @@ export default class CheckTableBox extends Component{
         }
 
         batchdelete =(e,items)=>{
-            if(this.props.batchdelete(e,items)){
+            if(this.props.batchdelete){
                this.setState({
                     chooseItems:[]
                 }) 
-               // console.log(findDOMNode(this))
                var ele = findDOMNode(this).getElementsByClassName('checktablebox')
                for (var i = 0; i < items.length; i++) {
-                   if(ele[items[i]]){
-                        ele[items[i]].checked = false
+                var index = items[i] - (this.state.currentPage-1) * this.state.averagenum
+                   if(ele[index]){
+                        ele[index].checked = false
+                        ele[index].parentNode.parentNode.style.background = "#fff"
                    }
                };
+               document.getElementById('checkAll').checked = false;
+               this.props.batchdelete(e,items)
             }
         }
 
         render() {
             const {tableHeader,data} = this.props
-            var headerItems = [< th key="0" style={{width:'15%'}}><input type="checkbox" onClick={this.chooseAll}/>全选</th>];
+            var headerItems = [< th key="0" style={{width:'15%'}}><input id="checkAll" type="checkbox" onClick={this.chooseAll}/>全选</th>];
             for (var i = 0; i < tableHeader.length; i++) {
                 headerItems.push( < th key={i+1} style={{width:tableHeader[i].width}}> { tableHeader[i].value } < /th>);
             };

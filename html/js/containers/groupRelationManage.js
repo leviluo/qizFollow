@@ -172,7 +172,7 @@ export default class groupManage extends Component {
                 str += data[i].id + ','
             };
             // console.log(str)
-            this.props.operateDataQuote('/Groups/addNewRelations',`ids=${str.slice(0,-1)}&groupid=${this.refs.GroupAddRelation.getValue()}`,this.getRelations)
+            this.props.operateDataQuote('/Groups/addNewRelations',`ids=${str.slice(0,-1)}&groupid=${this.refs.GroupAddRelation.getValue()}`)
             this.setState({
                 openConfirms: this.state.openConfirms ? false : true,
             })
