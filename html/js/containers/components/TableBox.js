@@ -55,6 +55,7 @@ export default class TableBox extends Component{
 
         lastpage = (e,pageNums) =>{
             if (this.state.currentPage == pageNums) {return};
+                        // console.log(pageNums)
             this.setState({
                 currentPage:pageNums
             })
@@ -62,17 +63,10 @@ export default class TableBox extends Component{
 
         pagego = (e,currentPage) =>{
             if (this.state.currentPage == currentPage) {return};
+
             this.setState({
                 currentPage:currentPage == undefined ? e.target.getAttribute("value") : currentPage
             })
-        }
-
-        componentShouldUpdate=(nextProps) =>{
-            if (this.props.data == nextProps.data) {
-                return false
-            }else{
-                return true
-            }
         }
 
         chooseOne =(e,index)=>{
@@ -115,7 +109,6 @@ export default class TableBox extends Component{
                     })(i)
                 }
             }; 
-                // console.log(this.state.pageNums)
                 return (<div><table className = "table table-hover" ><thead><tr style={{background:'rgb(240, 248, 255)'}}>{tableHeader}</tr></thead><tbody>{items.slice(averagenum*(this.state.currentPage-1),averagenum*this.state.currentPage)}</tbody></table>
                     {!this.props.PageNavBar && <PageNavBar pagego={this.pagego} firstpage={this.firstpage} lastpage={this.lastpage} pageup={this.pageup} pagedown={this.pagedown} pageNums={this.state.pageNums} currentPage={this.state.currentPage}/>}</div>
                 )

@@ -2,7 +2,6 @@ import React, { Component, PropTypes } from 'react'
 import CheckTableBox from './components/CheckTableBox/CheckTableBox'
 import ModalBox from './components/Modal/modal'
 import InputBox from './components/InputBox'
-import Tip from './components/Tip'
 import { asyncConnect } from 'redux-async-connect';
 import { fetchGroups,operateDataQuote,openTips } from '../actions/fetchSecretQuote';
 import { connect } from 'react-redux';
@@ -81,19 +80,19 @@ export default class groupManage extends Component {
             content: <InputBox header = '组名' defaultValue={this.props.GroupsData[index].name} indeed={true} handleSelect = {this.groupName}/>
           })
         }
-          //提交数据
+        //提交数据
         submitData =()=>{
-          if (!this.state.groupName) {
-            this.props.openTips('请填写组名')
+          if (!this.state.groupName || this.state.groupName.match(/['\s"!@#$%^&*]/)) {
+            this.props.openTips('请填写组名或者不能包含特殊字符')
             return
           };
           if (this.state.head == '添加新组') {
-          this.props.operateDataQuote('Groups/addGroups',`name=${this.state.groupName}`)
+          this.props.operateDataQuote('Groups/addGroups',`name=${this.state.groupName}`,this.updateView)
           }else{
-          this.props.operateDataQuote('Groups/modifyGroups',`name=${this.state.groupName}&id=${this.state.modifyid}`)
+          this.props.operateDataQuote('Groups/modifyGroups',`name=${this.state.groupName}&id=${this.state.modifyid}`,this.updateView)
           }
           this.setState({
-            open:false,
+            open:this.state.open?false:true,
             // openConfirms:false
           })
         }
@@ -110,15 +109,15 @@ export default class groupManage extends Component {
             ids += this.props.GroupsData[this.state.deleteitems[i]].id + ','
           };
 
-          this.props.operateDataQuote('Groups/deleteGroups',`id=${ids.slice(0,-1)}`)
+          this.props.operateDataQuote('Groups/deleteGroups',`id=${ids.slice(0,-1)}`,this.updateView)
           this.setState({
             // open:false,
-            openConfirms:false
+            openConfirms:this.state.openConfirms ? false :true
           })
         }
 
         render() {
-          return <div>{ this.props.Tips.tipstate && <Tip text={this.props.Tips.tipText} update={this.updateView}/> }
+          return <div>
           <CheckTableBox 
             add = {this.addModal}
             addHeader = "新增"

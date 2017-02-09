@@ -8,10 +8,9 @@ export function closeTips() {
 }
 
 export function openTips(text) {
-  console.log(text)
   return {
       type: object.tips_START,
-      text
+      response:{msg:text}
   }
 }
 
@@ -102,13 +101,14 @@ export function fetchFuturesAddrsQuote(url,body) {
   }
 }
 
-export function operateDataQuote(url,body) {
+export function operateDataQuote(url,body,update) {
   return {
     [CALL_API]: {
       endpoint: url,
       authenticated: true,
       types: [object.operateDataQuote_REQUEST, object.tips_START, object.operateDataQuote_FAILURE],
       body:body,
+      update:update
     }
   }
 }

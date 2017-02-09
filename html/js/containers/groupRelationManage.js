@@ -4,7 +4,6 @@ import ModalBox from './components/Modal/modal'
 import InputBox from './components/InputBox'
 import SelectBox from './components/SelectBox'
 import SelectBoxCondition from './components/SelectBoxCondition'
-import Tip from './components/Tip'
 import { asyncConnect } from 'redux-async-connect';
 import { fetchGroupRelations,fetchGroups,fetchAccountsQuote,operateDataQuote,openTips } from '../actions/fetchSecretQuote';
 import { connect } from 'react-redux';
@@ -173,7 +172,7 @@ export default class groupManage extends Component {
                 str += data[i].id + ','
             };
             // console.log(str)
-            this.props.operateDataQuote('/Groups/addNewRelations',`ids=${str.slice(0,-1)}&groupid=${this.refs.GroupAddRelation.getValue()}`)
+            this.props.operateDataQuote('/Groups/addNewRelations',`ids=${str.slice(0,-1)}&groupid=${this.refs.GroupAddRelation.getValue()}`,this.getRelations)
             this.setState({
                 openConfirms: this.state.openConfirms ? false : true,
             })
@@ -248,7 +247,7 @@ export default class groupManage extends Component {
             ids += this.props.GroupRelationsData[this.state.deleteitems[i]].id + ','
           };
           // console.log(ids.slice(0,-1))
-          this.props.operateDataQuote('Groups/deleteGroupRelations',`ids=${ids.slice(0,-1)}`)
+          this.props.operateDataQuote('Groups/deleteGroupRelations',`ids=${ids.slice(0,-1)}`,this.getRelations)
           this.setState({
             openConfirms:this.state.openConfirms?false:true,
           })
@@ -278,7 +277,7 @@ export default class groupManage extends Component {
 
         render() {
           // let data = [{}]
-          return <div>{ this.props.Tips.tipstate && <Tip text={this.props.Tips.tipText} update={this.getRelations}/> }
+          return <div>
           <div className="pull-left" style={{width:'280px',margin:'0 5px',paddingTop:'10px'}}>
           <SelectBox header = "组名" items={this.GroupsItems} defaultValue="" ref="GroupNameChange" />
           </div>

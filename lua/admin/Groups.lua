@@ -142,13 +142,13 @@ elseif(ngx.var.api_function == "setContractConvert")then
 	local bOK,deletes = publicMethod.operateOnedata_nil("delete from FollowConvert where followid in (select followid from RelationGroupMember where GroupID = "..value['groupid']..");")
 	local data = cjson.decode(value['items']);
 	
+		local str = ''
 	if(data[1] == nil) then
 		if bOK == true then 
 			printInfo(0,"修改成功")
 		end
 		return;
 	else 
-		local str = ''
 		for k,v in pairs(data) do
 			for kk,vv in pairs(followids) do
 				str = str.."('"..v['contractHost'].."','"..v['contractFollow'].."','"..v['FollowDirection'].."',"..v['ratio']..","..vv['followid'].."),"

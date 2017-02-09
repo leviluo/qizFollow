@@ -3,7 +3,6 @@ import InputBox from './components/InputBox'
 import { connect } from 'react-redux'
 import { openTips } from '../actions/fetchSecretQuote';
 import { fetchConfigsDataQuote, operateDataQuote } from '../actions/fetchSecretQuote';
-import Tip from './components/Tip'
 import { asyncConnect } from 'redux-async-connect';
 
 @asyncConnect([{
@@ -56,10 +55,12 @@ export default class configManage extends Component {
 
     submitData = () => {
         let body = '';
-
-        if (this.state.OrderLimitDelay || this.state.OrderLimitDelay == 0) {
-            body += "OrderLimitDelay=" + this.state.OrderLimitDelay + '&'
-        }
+        if (parseInt(this.state.OrderLimitDelay) >= 0) {
+            body += "OrderLimitDelay=" + parseInt(this.state.OrderLimitDelay) + '&'
+        }else{
+            this.props.openTips("下单不成交追单时间必须大于0")
+            return
+        };
 
         if (this.state.OpenPriceTick >= -10 && this.state.OpenPriceTick <= 10) {
             body += "OpenPriceTick=" + this.state.OpenPriceTick + '&'
@@ -80,7 +81,7 @@ export default class configManage extends Component {
             return
         };
 
-        this.props.operateDataQuote('admin/Configs', `${body}`)
+        this.props.operateDataQuote('admin/Configs', `${body}`,this.updateView)
     }
 
     componentWillReceiveProps() {
@@ -114,7 +115,7 @@ export default class configManage extends Component {
                 return ( < div > < /div>)
                 }
 
-                return ( < div >{ this.props.Tips.tipstate && <Tip text={this.props.Tips.tipText} update={this.updateView}/> }
+                return ( < div >
                  < div className = "col-md-4 col-md-offset-4" >
                         < InputBox header = '不成交追单时间(ms)'
                         defaultValue = { OrderLimitDelay }

@@ -109,19 +109,19 @@ export function FuturesAddrsDataQuotes(state = {
 
 // The quotes reducer
 export function Tips(state = {
-    tipText:{},
+    tipText:'',
     tipstate:false
   }, action) {
   switch (action.type) {
     case constants.tips_START:
       return objectAssign({}, state, { 
         tipstate: true,
-        tipText: action.response || action.text
+        tipText: action.response
       })
     case constants.tips_STOP:
       return objectAssign({}, state, {
         tipstate: false,
-        tipText:{}
+        tipText:''
       })
     default:
       return state

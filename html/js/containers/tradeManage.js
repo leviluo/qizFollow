@@ -4,7 +4,6 @@ import ModalBox from './components/Modal'
 import SelectBox from './components/SelectBox'
 import SelectBoxCondition from './components/SelectBoxCondition'
 import InputBox from './components/InputBox'
-import Tip from './components/Tip'
 import Confirms from './components/Confirms/Confirms'
 import { asyncConnect } from 'redux-async-connect';
 import { fetchSecretQuote,fetchFuturesQuote,fetchFuturesAddrsQuote,operateDataQuote,openTips } from '../actions/fetchSecretQuote';
@@ -61,7 +60,7 @@ export default class tradeManage extends Component {
             [{key:'FuturesName',value:"交易系统名称"}, 
             {key:'BrokerID',value:"经纪公司代码"}, 
             {key:'ApiType',value:"接口类型",selectedView:{0:'CTP',1:'奇正',2:'金牛',3:'知富',4:'博易'}}, 
-            {key:'AuthType',value:"授权类型",selectedView:{0:'账户密码',1:'合约转换'}},  
+            {key:'AuthType',value:"授权类型",selectedView:{0:'账户密码',1:'IP授权码'}},  
             {key:'AuthCode',value:"授权码"},
             {key:'modify',value:"修改",extendsMethod:function(value,index){return <button className="btn btn-default" onClick={()=>me.modifyModal(index)}>修改</button>}},
             {key:'delete',value:"删除",extendsMethod:function(value,index){return <button className="btn btn-default" onClick={()=>me.deleteModal(index)}>删除</button>}}
@@ -266,7 +265,7 @@ export default class tradeManage extends Component {
             this.setState({ 
                 openConfirms: this.state.openConfirms ? false : true,
             })
-            this.props.operateDataQuote(this.state.deleteurl,'id='+this.state.deleteid)
+            this.props.operateDataQuote(this.state.deleteurl,'id='+this.state.deleteid,this.updateView)
         }
 
         deleteAddrModal = (index) => {
@@ -303,6 +302,10 @@ export default class tradeManage extends Component {
                 this.props.openTips("未选择授权类型")
                 return;
             }
+            if (this.state.AuthCode.length > 64) {
+                this.props.openTips("授权码小于64个字符")
+                return;
+            };
 
             let body = "FuturesName="+this.state.FuturesName+"&BrokerID="+this.state.BrokerID+"&ApiType="+this.state.ApiType+"&AuthCode="+this.state.AuthCode+"&AuthType="+this.state.AuthType;
             if(this.state.head == '交易系统管理--添加新系统'){
@@ -310,7 +313,7 @@ export default class tradeManage extends Component {
             }else{
                 var addon = "&FuturesID="+this.state.FuturesID+"&operateType=MODIFY"
             }
-            this.props.operateDataQuote('admin/FuturesData',`${body}${addon}`)
+            this.props.operateDataQuote('admin/FuturesData',`${body}${addon}`,this.updateView)
             } else if(this.state.modalType==1){
                 if (!/[\d\.]/.test(this.state.IP)) {
                 this.props.openTips("未填写地址")
@@ -336,7 +339,7 @@ export default class tradeManage extends Component {
                 }else{
                     var addon = "&id="+this.state.addrId+"&operateType=MODIFY"
                 }
-                this.props.operateDataQuote('admin/FuturesAddrData',`${body}${addon}`)
+                this.props.operateDataQuote('admin/FuturesAddrData',`${body}${addon}`,this.updateView)
             }
 
             this.setState({ 
@@ -398,7 +401,7 @@ export default class tradeManage extends Component {
 
         render() {
             // console.log(this.state.FuturesData)
-            return <div>{ this.props.Tips.tipstate && <Tip text={this.props.Tips.tipText} update={this.updateView}/> }
+            return <div>
             <button className = "btn btn-primary pull-right" onClick={this.addModal} style={{marginBottom:'5px'}}> 添加 < /button> 
             <SelectBoxCondition header = "交易系统" items={this.props.quote} selectValue="" handleSelect ={this.futuresChangeStatus}/>
             < TableBox tableHeader = { this.tradeSystemtableHeader }

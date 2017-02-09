@@ -38,7 +38,6 @@ export function callApi(endpoint,authenticated,body) {
         return Promise.reject(text)
       }
       if (text.id == -100) {
-        console.log("tiaozhuanle")
         localStorage.removeItem('id_token')
         localStorage.removeItem('userid')
         hashHistory.push('/login')
@@ -59,7 +58,7 @@ export default store => next => action => {
     return next(action)
   }
 
-  let { endpoint, types, authenticated,body } = callAPI
+  let { endpoint, types, authenticated,body,update } = callAPI
 
   const [ requestType, successType, errorType ] = types
 
@@ -67,9 +66,13 @@ export default store => next => action => {
   // return callApi(endpoint, authenticated,body).then(
   //   response => next({response,authenticated,type: successType}),
   // ).catch(error => next({message: '登录过期或登录发生错误,请重新登陆',type:'LOGIN_FAILURE'}))
-  return callApi(endpoint, authenticated,body).then(
-    response =>
-      next({
+  return callApi(endpoint, authenticated,body)
+  .then((response)=>{
+    if(update){update()}
+    return response
+  })
+  .then(
+    response => next({
         response,
         authenticated,
         type: successType

@@ -9,7 +9,6 @@ import InputBasic from './components/InputBasic/InputBasic'
 import RadioBox from './components/RadioBox'
 import CheckBox from './components/CheckBox/checkBox'
 import TextareaBox from './components/TextareaBox'
-import Tip from './components/Tip'
 import Confirms from './components/Confirms/Confirms'
 import { asyncConnect } from 'redux-async-connect';
 import { fetchHostFuturesQuote,fetchContractFilterQuote,fetchAccountFollowsQuote,fetchFollowFuturesQuote,fetchAccountsQuote,operateDataQuote,openTips } from '../actions/fetchSecretQuote';
@@ -326,7 +325,7 @@ export default class relationManage extends Component {
             for (var i = 0; i < this.state.contractFilterData.length; i++) {
                 str += this.state.contractFilterData[i].contractid + ','
             };
-            this.props.operateDataQuote('/AccountFollows/modifyContractFilter',`items=${str.slice(0,-1)}&followid=${this.state.followid}`)
+            this.props.operateDataQuote('/AccountFollows/modifyContractFilter',`items=${str.slice(0,-1)}&followid=${this.state.followid}`,this.updateView)
             this.setState({
                 openConfirms: this.state.openConfirms ? false : true,
             })
@@ -378,7 +377,7 @@ export default class relationManage extends Component {
                 str += JSON.stringify(data[i]) + ','
             };
             console.log(str)
-            this.props.operateDataQuote('/AccountFollows/modifyContractConvert',`items=[${str.slice(0,-1)}]&followid=${this.state.followid}`)
+            this.props.operateDataQuote('/AccountFollows/modifyContractConvert',`items=[${str.slice(0,-1)}]&followid=${this.state.followid}`,this.updateView)
             this.setState({
                 openConfirms: this.state.openConfirms ? false : true,
             })
@@ -515,7 +514,11 @@ export default class relationManage extends Component {
                           <button className="btn btn-primary pull-right" style={{marginBottom:"20px"}} onClick={this.addContractConvert}>添加</button>
                     </div>,
                     contractConvertData:data,
-                    openConfirms:this.state.openConfirms ? false : true
+                    openConfirms:this.state.openConfirms ? false : true,
+                    ContractHost:'',
+                    ContractConvert:'',
+                    ContractDirection:0,
+                    Contractratio:'',
                 })
             })
         }
@@ -524,7 +527,7 @@ export default class relationManage extends Component {
             this.setState({ 
                 openConfirms: this.state.openConfirms ? false : true,
             })
-            this.props.operateDataQuote(this.state.deleteurl,'id='+this.state.deleteid)
+            this.props.operateDataQuote(this.state.deleteurl,'id='+this.state.deleteid,this.updateView)
         }
 
         submitData = () => {
@@ -569,7 +572,7 @@ export default class relationManage extends Component {
                 open: (this.state.open == true) ? false : true,
             })
 
-            this.props.operateDataQuote('AccountFollows/AccountFollowsData',`${body}${addon}`)
+            this.props.operateDataQuote('AccountFollows/AccountFollowsData',`${body}${addon}`,this.updateView)
         }
 
         filterdata = (type)=>{
@@ -649,8 +652,7 @@ export default class relationManage extends Component {
         }
 
         render() {
-            
-            return <div>{ this.props.Tips.tipstate && <Tip text={this.props.Tips.tipText} update={this.updateView}/> }
+            return <div>
             <SelectBoxCondition header = "主期货公司" items={this.props.HostFuturesData} defaultValue="" handleSelect ={this.HostFuturesNameChange}/>
             <SelectBoxCondition header = "从期货公司" items={this.props.FollowFuturesData} defaultValue="" handleSelect ={this.FollowFuturesNameChange}/>
             <SelectBoxCondition header = "主账户" items={this.HostAccounts} defaultValue="" handleSelect ={this.HostAccountChange}/>

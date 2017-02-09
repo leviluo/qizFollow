@@ -5,7 +5,6 @@ import ModalBox from './components/Modal/modal'
 import InputBox from './components/InputBox'
 import InputBasic  from './components/InputBasic/InputBasic'
 import RadioBox from './components/RadioBox'
-import Tip from './components/Tip'
 import { asyncConnect } from 'redux-async-connect';
 import { fetchGroups,operateDataQuote,openTips } from '../actions/fetchSecretQuote';
 import { connect } from 'react-redux';
@@ -197,7 +196,7 @@ export default class groupSetting extends Component {
                 };
                 var data = []
                 this.setState({
-                    openConfirms:this.state.open ? false :true,
+                    openConfirms:this.state.openConfirms ? false :true,
                     confirmHead:"修改组设置",
                     ConfirmText: <div style={{textAlign:'left'}}>
                         <CheckTableBox 
@@ -210,7 +209,8 @@ export default class groupSetting extends Component {
                           <InputBox header = '原合约' indeed={true} handleSelect = {this.ContractHost}/>  
                           <InputBox header = '转换合约' indeed={true}  handleSelect = {this.ContractConvert}/>  
                           <RadioBox header = '方向' name="ContractDirection" defaultValue="0" indeed={true} items={followdirections} handleRadio = {this.ContractDirection}/>
-                          <InputBox header = '倍率' indeed={true}  handleSelect = {this.Contractratio}/>  
+                          <InputBox header = '倍率' indeed={true}  handleSelect = {this.Contractratio}/> 
+                          <div style={{color:"red"}}>提示：当合约为空提交时，会删除所有原有合约过滤，请谨慎确认提交</div> 
                           <button className="btn btn-primary pull-right" style={{marginBottom:"20px"}} onClick={this.addContractConvert}>添加</button>
                     </div>,
                     confirm:this.confirmContractConvert,
@@ -261,7 +261,7 @@ export default class groupSetting extends Component {
             for (var i = 0; i < data.length; i++) {
                 str += JSON.stringify(data[i]) + ','
             };
-            this.props.operateDataQuote('Groups/setContractConvert',`items=[${str.slice(0,-1)}]&groupid=${this.props.GroupsData[this.state.item].id}`)
+            this.props.operateDataQuote('Groups/setContractConvert',`items=[${str.slice(0,-1)}]&groupid=${this.props.GroupsData[this.state.item].id}`,this.updateView)
             this.setState({
                 openConfirms: this.state.openConfirms ? false : true,
             })
@@ -276,7 +276,7 @@ export default class groupSetting extends Component {
             for (var i = 0; i < this.state.contractFilterData.length; i++) {
                 str += this.state.contractFilterData[i].contractid + ','
             };
-            this.props.operateDataQuote('Groups/setContractFilter',`items=${str.slice(0,-1)}&groupid=${this.props.GroupsData[this.state.item].id}`)
+            this.props.operateDataQuote('Groups/setContractFilter',`items=${str.slice(0,-1)}&groupid=${this.props.GroupsData[this.state.item].id}`,this.updateView)
             this.setState({
                 openConfirms: this.state.openConfirms ? false : true,
             })
@@ -291,21 +291,21 @@ export default class groupSetting extends Component {
               this.props.openTips("倍率为正整数")
               return
           };
-          this.props.operateDataQuote("Groups/setRatio",`ratio=${this.state.ratio}&groupid=${this.props.GroupsData[this.state.item].id}`)
+          this.props.operateDataQuote("Groups/setRatio",`ratio=${this.state.ratio}&groupid=${this.props.GroupsData[this.state.item].id}`,this.updateView)
           this.setState({
             openConfirms:this.state.openConfirms ? false : true,
           })
         }
 
         confirmDirection =()=>{
-          this.props.operateDataQuote("Groups/setfollowdirections",`followdirections=${this.state.followdirections}&groupid=${this.props.GroupsData[this.state.item].id}`)
+          this.props.operateDataQuote("Groups/setfollowdirections",`followdirections=${this.state.followdirections}&groupid=${this.props.GroupsData[this.state.item].id}`,this.updateView)
           this.setState({
             openConfirms:this.state.openConfirms ? false : true,
           })
         }
 
         confirmStatus =()=>{
-          this.props.operateDataQuote("Groups/setStatus",`status=${this.state.status}&groupid=${this.props.GroupsData[this.state.item].id}`)
+          this.props.operateDataQuote("Groups/setStatus",`status=${this.state.status}&groupid=${this.props.GroupsData[this.state.item].id}`,this.updateView)
           this.setState({
             openConfirms:this.state.openConfirms ? false : true,
           })
@@ -356,7 +356,7 @@ export default class groupSetting extends Component {
         }
 
         render() {
-          return <div>{ this.props.Tips.tipstate && <Tip text={this.props.Tips.tipText} /> }
+          return <div>
           <div className="pull-right" style={{margin:'5px'}}>
           <button className="btn btn-primary" onClick={this.commitStatus}>是否启用</button>&nbsp;
           <button className="btn btn-primary" onClick={this.commitDirection}>方向</button>&nbsp;

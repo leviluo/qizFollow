@@ -17,8 +17,7 @@ import { Link } from 'react-router'
 export default class Index extends Component {
 
   static propTypes = {
-      isAuthenticated: PropTypes.bool.isRequired,
-      errorMessage: PropTypes.string,
+
     }
 
   componentDidMount=(e)=>{
@@ -84,7 +83,7 @@ export default class Index extends Component {
           </div>
         </div>
       </nav>
-       {errorMessage && <Tip text={errorMessage} /> }
+       <Tip />
        <div style={{margin:'0 15px'}}>
       {this.props.children}
        </div>

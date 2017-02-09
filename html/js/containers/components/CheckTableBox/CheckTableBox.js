@@ -15,12 +15,18 @@ export default class CheckTableBox extends Component{
             this.setState({
                 currentPage:this.state.currentPage == 1 ? 1 : this.state.currentPage - 1
             })
+            this.setState({
+              chooseItems:[]
+            })
         }
 
         pagedown = (e,pageNums)=>{
             if (this.state.currentPage == pageNums) {return};
             this.setState({
                 currentPage:this.state.currentPage == pageNums ? pageNums : this.state.currentPage + 1
+            })
+            this.setState({
+              chooseItems:[]
             })
         }
 
@@ -29,6 +35,9 @@ export default class CheckTableBox extends Component{
             this.setState({
                 currentPage:1
             })
+            this.setState({
+              chooseItems:[]
+            })
         }
 
         lastpage = (e,pageNums) =>{
@@ -36,12 +45,18 @@ export default class CheckTableBox extends Component{
             this.setState({
                 currentPage:pageNums
             })
+            this.setState({
+              chooseItems:[]
+            })
         }
 
         pagego = (e,currentPage) =>{
             if (this.state.currentPage == currentPage) {return};
             this.setState({
                 currentPage:currentPage == undefined ? e.target.getAttribute("value") : currentPage
+            })
+            this.setState({
+              chooseItems:[]
             })
         }
 
@@ -113,9 +128,16 @@ export default class CheckTableBox extends Component{
           if(e.target.checked){
             this.setStyle('on')
             var ar = []
-            for (var i = 0; i < Math.min(this.state.averagenum,this.props.data.length); i++) {
-                ar.push(i)
-            };
+            if (((this.props.data.length/this.state.averagenum) - this.state.currentPage) >= 0) {
+                for (var i = 0; i < this.state.averagenum; i++) {
+                    ar.push(i + (this.state.currentPage-1) * this.state.averagenum)
+                };
+            }else{
+                var num = this.props.data.length - this.state.averagenum * (this.state.currentPage - 1)
+                for (var i = 0; i < num; i++) {
+                    ar.push(i + (this.state.currentPage-1) * this.state.averagenum)
+                };
+            }
             this.setState({
               chooseItems:ar
             })

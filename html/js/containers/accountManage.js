@@ -6,7 +6,6 @@ import SelectBoxCondition from './components/SelectBoxCondition'
 import InputBox from './components/InputBox'
 import RadioBox from './components/RadioBox'
 import TextareaBox from './components/TextareaBox'
-import Tip from './components/Tip'
 import { asyncConnect } from 'redux-async-connect';
 import { fetchSecretQuote,fetchDataQuote,operateDataQuote,openTips } from '../actions/fetchSecretQuote';
 import { connect } from 'react-redux';
@@ -26,7 +25,6 @@ promise: ({store: {dispatch, getState}}) => {
   }
 
   if (!getState().dataQuotes.dataQuoteResult) {
-
     promises.push(dispatch(fetchDataQuote('admin/GetAccountData')));
   }
 
@@ -185,7 +183,7 @@ export default class accountManage extends Component {
             this.setState({ 
                 openConfirms: this.state.openConfirms ? false : true,
             })
-            this.props.operateDataQuote(this.state.deleteurl,'AccountID='+this.state.deleteid)
+            this.props.operateDataQuote(this.state.deleteurl,'AccountID='+this.state.deleteid,this.updateView)
         }
 
         submitData = () => {
@@ -216,7 +214,7 @@ export default class accountManage extends Component {
                 open: (this.state.open == true) ? false : true,
             })
             
-            this.props.operateDataQuote('admin/AccountData',`${body}${addon}`)
+            this.props.operateDataQuote('admin/AccountData',`${body}${addon}`,this.updateView)
         }
 
         filterdata = (type,dataa)=>{
@@ -276,7 +274,7 @@ export default class accountManage extends Component {
 
         render() {
            // console.log(this.state.data)
-            return <div>{ this.props.Tips.tipstate && <Tip text={this.props.Tips.tipText} update={this.updateView}/>}
+            return <div>
             <SelectBoxCondition header = "交易系统" items={this.props.quote} defaultValue="" handleSelect ={this.futuresChangeStatus}/>
             <SelectBoxCondition header = "账户类型" items={accounttypes} defaultValue="" handleSelect ={this.accountTypeChangeStatus}/>
             <button className = "btn btn-primary pull-right" onClick={this.addModal} style={{marginBottom:'5px'}}> 添加 < /button> 

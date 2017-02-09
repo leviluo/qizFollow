@@ -25,14 +25,17 @@ function AccountFollowsData()
 		if value['operateType'] == 'ADD' then
 		local bOK,result = publicMethod.operateOnedata_nil("insert into AccountFollow(`HostAccountID`,`Status`,`FollowAccountID`,`FollowDirection`,`FollowRatio`,`updatetime`,`OperID`,`Remark`) values("..value['HostAccountID']..",'"..value['Status'].."',"..value['FollowAccountID']..",'"..value['FollowDirection'].."','"..value['FollowRatio'].."',now(),(select OperID from Operator where OperName='"..value['OperId'].."'),'"..value['Remark'].."')")
 		if bOK == true then 
-			local result = publicMethod.getOnedata_nil("select * from AccountFollow where HostAccountID="..value['HostAccountID'].." and FollowAccountID="..value['FollowAccountID']..";")
-			local groups = stringSplit(value['groups'],',')
-			local str = ''
-			ngx.log(ngx.ERR,result[1]['id'])
-			for k,v in pairs(groups) do
-				str = str.."("..v..","..result[1]['id'].."),"
+			if value['groups'] ~= nil and value['groups'] ~= '' then
+				local result = publicMethod.getOnedata_nil("select * from AccountFollow where HostAccountID="..value['HostAccountID'].." and FollowAccountID="..value['FollowAccountID']..";")
+				local str = ''
+				local groups = stringSplit(value['groups'],',')
+				for k,v in pairs(groups) do
+					str = str.."("..v..","..result[1]['id'].."),"
+				end
+				publicMethod.operateOnedata("insert into RelationGroupMember(`GroupID`,`followid`) values "..string.sub(str,0,-2)..";","添加成功")
+			else 
+				printInfo(0, "添加成功");
 			end
-			publicMethod.operateOnedata("insert into RelationGroupMember(`GroupID`,`followid`) values "..string.sub(str,0,-2)..";","添加成功")
 		end
 
 		elseif value['operateType'] == 'MODIFY' then
@@ -52,7 +55,8 @@ function delAccountFollowData()
 		printInfo(-12, "缺少参数");
 		return;
 	end;
-	publicMethod.operateOnedata("delete from AccountFollow where id = "..value['id']..";","删除成功")
+	-- RelationGroupMember FollowFilter FollowConvert
+	publicMethod.operateOnedata("delete RelationGroupMember.*,FollowFilter.*,FollowConvert.*,a.* from AccountFollow as a left join RelationGroupMember on RelationGroupMember.followid = a.id left join FollowFilter on FollowFilter.followid = a.id left join FollowConvert on FollowConvert.followid = a.id where a.id = "..value['id']..";","删除成功")
 end;
 
 function getContractFilter()
@@ -60,26 +64,55 @@ function getContractFilter()
 end
 
 function modifyContractFilter()
-	-- ngx.log(ngx.ERR,value['items'])
-	local result = stringSplit(value['items'],',')
+
+	local bOK,deletes = publicMethod.operateOnedata_nil("delete from followfilter where followid = "..value['followid']..";")
+
+	local result = '';
+	if(value['items'] == '') then
+		if bOK == true then 
+			printInfo(0,"修改成功")
+		end
+		return;
+	else 
+		result = stringSplit(value['items'],',')
+	end
+
 	local str = ''
 	for k,v in pairs(result) do
-		-- ngx.log(ngx.ERR,v)
 		str = str.."('"..v.."',"..value['followid'].."),"
 	end
-	-- ngx.log(ngx.ERR,string.sub(str,0,-2))
-	publicMethod.operateOnedata_nil("delete from followfilter where followid = "..value['followid']..";")
-	publicMethod.operateOnedata("insert into followfilter(`contractid`,`followid`) values "..string.sub(str,0,-2)..";","修改成功")
+
+	if bOK == true then 
+		publicMethod.operateOnedata("insert into followfilter(`contractid`,`followid`) values "..string.sub(str,0,-2)..";","修改成功")
+	end
 end
 
 function modifyContractConvert()
+	local bOK,deletes = publicMethod.operateOnedata_nil("delete from FollowConvert where followid = "..value['followid']..";")
 	local data = cjson.decode(value['items']);
-	publicMethod.operateOnedata_nil("delete from FollowConvert where followid = "..value['followid']..";")
-	local str = ''
-	for k,v in pairs(data) do
+	
+		local str = ''
+	if(data[1] == nil) then
+		if bOK == true then 
+			printInfo(0,"修改成功")
+		end
+		return;
+	else 
+		for k,v in pairs(data) do
 		str = str.."('"..v['contractHost'].."','"..v['contractFollow'].."','"..v['FollowDirection'].."',"..v['ratio']..","..value['followid'].."),"
+		end
 	end
-	publicMethod.operateOnedata("insert into FollowConvert(`contractHost`,`contractFollow`,`FollowDirection`,`ratio`,`followid`) values "..string.sub(str,0,-2)..";","修改成功")
+
+	-- local data = cjson.decode(value['items']);
+	-- publicMethod.operateOnedata_nil("delete from FollowConvert where followid = "..value['followid']..";")
+	-- local str = ''
+	-- for k,v in pairs(data) do
+	-- 	str = str.."('"..v['contractHost'].."','"..v['contractFollow'].."','"..v['FollowDirection'].."',"..v['ratio']..","..value['followid'].."),"
+	-- end
+
+	if bOK == true then
+		publicMethod.operateOnedata("insert into FollowConvert(`contractHost`,`contractFollow`,`FollowDirection`,`ratio`,`followid`) values "..string.sub(str,0,-2)..";","修改成功")
+	end
 end
 
 function stringSplit(str, delimiter)
