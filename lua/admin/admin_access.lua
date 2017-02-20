@@ -152,20 +152,40 @@ function Configs()
 
 end
 
+function stringSplit(str, delimiter)
+	if (str==nil or str=='' or delimiter==nil) then
+		return nil
+	end
+    local result = {}
+    for match in (str..delimiter):gmatch("(.-)"..delimiter) do
+        table.insert(result, match)
+    end
+    return result
+end
+
 function delAccountData()
 
-	if (value['AccountID']==nil) then
+	if (value['AccountIDs']==nil) then
 		printInfo(-12, "缺少参数");
 		return;
 	end;
 
-	local result = publicMethod.getOnedata_nil("select * from AccountFollow where HostAccountID = "..value['AccountID'].." or FollowAccountID = "..value['AccountID'].."");
-		if(next(result) == nil) then
-		publicMethod.operateOnedata("delete from Account where AccountID = "..value['AccountID']..";","删除成功")
-		else 
-		printInfo(-13, "该账户存在关联关系,请先删除此关系");
-	end
+	local ids = stringSplit(value['AccountIDs'],',')
 
+    local nodelete = ''
+
+	for k,v in pairs(ids) do
+		local ok,result = publicMethod.operateOnedata_nil("delete from Account where AccountID = "..v.." and "..v.." not in (select HostAccountID from AccountFollow) and "..v.." not in (select FollowAccountID from AccountFollow)");
+		if result['affected_rows'] == 0 then 
+			local name = publicMethod.getOnedata_nil("select Account from Account where AccountID = "..v.."")
+			nodelete = nodelete .. name[1]['Account'] .. ','
+		end
+	end
+	if nodelete == '' then 
+	printInfo(0, "删除成功");
+	else 
+	printInfo(0, "账户("..string.sub(nodelete,0,-2)..")存在关联关系,请先删除此关系");
+	end 
 end;
 
 function delFuturesData()

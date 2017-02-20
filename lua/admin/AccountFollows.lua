@@ -51,12 +51,31 @@ function GetAccountFollows()
 end;
 
 function delAccountFollowData()
-	if (value['id']==nil) then
+	if (value['ids']==nil) then
 		printInfo(-12, "缺少参数");
 		return;
 	end;
 	-- RelationGroupMember FollowFilter FollowConvert
-	publicMethod.operateOnedata("delete RelationGroupMember.*,FollowFilter.*,FollowConvert.*,a.* from AccountFollow as a left join RelationGroupMember on RelationGroupMember.followid = a.id left join FollowFilter on FollowFilter.followid = a.id left join FollowConvert on FollowConvert.followid = a.id where a.id = "..value['id']..";","删除成功")
+	-- publicMethod.operateOnedata("delete RelationGroupMember.*,FollowFilter.*,FollowConvert.*,a.* from AccountFollow as a left join RelationGroupMember on RelationGroupMember.followid = a.id left join FollowFilter on FollowFilter.followid = a.id left join FollowConvert on FollowConvert.followid = a.id where a.id = "..value['id']..";","删除成功")
+
+	local ids = stringSplit(value['ids'],',')
+
+    local nodelete = ''
+
+	for k,v in pairs(ids) do
+		local ok,result = publicMethod.operateOnedata_nil("delete RelationGroupMember.*,FollowFilter.*,FollowConvert.*,a.* from AccountFollow as a left join RelationGroupMember on RelationGroupMember.followid = a.id left join FollowFilter on FollowFilter.followid = a.id left join FollowConvert on FollowConvert.followid = a.id where a.id = "..v..";");
+		if result['affected_rows'] == 0 then 
+			local name = publicMethod.getOnedata_nil("select ha.Account as HostAccount,fa.Account as FollowAccount from AccountFollow as a left join Account as ha on a.HostAccountID = ha.AccountID left join Account as fa on a.FollowAccountID = fa.AccountID where a.id = "..v.."")
+			nodelete = nodelete .. "主账户(" .. name[1]['HostAccount'] .. ") 从账户("..name[1]['FollowAccount']..'),'
+		end
+	end
+
+	if nodelete == '' then 
+	printInfo(0, "删除成功");
+	else 
+	printInfo(0, "账户关系 "..string.sub(nodelete,0,-2).." 删除失败");
+	end 
+
 end;
 
 function getContractFilter()

@@ -4,6 +4,7 @@ import { connect } from 'react-redux'
 import { openTips } from '../actions/fetchSecretQuote';
 import { fetchConfigsDataQuote, operateDataQuote } from '../actions/fetchSecretQuote';
 import { asyncConnect } from 'redux-async-connect';
+import { browserHistory } from 'react-router'
 
 @asyncConnect([{
 promise: ({store: {dispatch, getState}}) => {
@@ -20,7 +21,8 @@ promise: ({store: {dispatch, getState}}) => {
 @connect(
   state => ({
     ConfigsData:state.ConfigsQuotes.ConfigsData,
-    Tips:state.Tips
+    Tips:state.Tips,
+    auth:state.auth
     }),
   {fetchConfigsDataQuote,operateDataQuote,openTips}
 )
@@ -33,6 +35,11 @@ export default class configManage extends Component {
 
     componentWillMount = () => {
         // if (!this.props.ConfigsData) this.props.fetchConfigsDataQuote('admin/GetConfigsData')
+        if (!this.props.auth.isAuthenticated) {
+                browserHistory.push('/login')
+                return
+            };
+
     }
 
     OrderLimitDelayChange = (e) => {

@@ -14,6 +14,7 @@ import { asyncConnect } from 'redux-async-connect';
 import { fetchHostFuturesQuote,fetchContractFilterQuote,fetchAccountFollowsQuote,fetchFollowFuturesQuote,fetchAccountsQuote,operateDataQuote,openTips } from '../actions/fetchSecretQuote';
 import { connect } from 'react-redux';
 import fetchData from './fetchData'
+import { browserHistory } from 'react-router'
 
 const statusitems = [{id:0,value:'启用'},{id:1,value:'停用'}]
 const followdirections = [{id:0,value:'正向'},{id:1,value:'反向'}]
@@ -33,6 +34,7 @@ promises.push(dispatch(fetchAccountsQuote('admin/GetAccounts')));
 
 @connect(
   state => ({
+    auth:state.auth,
     Tips:state.Tips,
     AccountFollowsData:state.AccountFollowsQuotes.AccountFollowsData,
     HostFuturesData:state.HostFuturesQuotes.HostFuturesData,
@@ -63,6 +65,10 @@ export default class relationManage extends Component {
           }
 
         componentWillMount = () => {
+            if (!this.props.auth.isAuthenticated) {
+                browserHistory.push('/login')
+                return
+            };
             this.HostAccounts = []
             this.FollowAccounts = []
             if (this.props.AccountsData) {
@@ -90,7 +96,8 @@ export default class relationManage extends Component {
                     {key:'FilterNumber',value:"合约过滤",extendsMethod:function(value,index){return <a onClick={()=>me.queryContractFilter(index)}>{value > 0 ? value+'条过滤' : '添加'}</a>}},
                     {key:'ConvertNumber',value:"合约转换",extendsMethod:function(value,index){return <a onClick={()=>me.queryContractConvert(index)}>{value > 0 ? value+'条转换' : '添加'}</a>}},
                     {key:'modify',value:"修改",extendsMethod:function(value,index){return <button className="btn btn-default" onClick={()=>me.modifyModal(index)}>修改</button>}},
-                    {key:'delete',value:"删除",extendsMethod:function(value,index){return <button className="btn btn-default" onClick={()=>me.deleteModal(index)}>删除</button>}}]
+                    // {key:'delete',value:"删除",extendsMethod:function(value,index){return <button className="btn btn-default" onClick={()=>me.deleteModal(index)}>删除</button>}}
+                    ]
            if (this.props.AccountFollowsData) {
                 this.setState({
                     AccountFollowsData:this.props.AccountFollowsData
@@ -110,8 +117,16 @@ export default class relationManage extends Component {
 
         HostFuturesChange = (e) => {
             let HostAccounts = []
+            test:
             for (var i = 0; i < this.props.AccountsData.length; i++) {
                 if(this.props.AccountsData[i].FuturesName == (e.target.value || FuturesName)  && this.props.AccountsData[i].AccountType == 0){
+                    if (this.state.FollowAccountID) {
+                        for (var j = 0; j < this.state.AccountFollowsData.length; j++) {
+                            if(this.state.AccountFollowsData[j].HostAccountID == this.props.AccountsData[i].id && this.state.AccountFollowsData[j].FollowAccountID == this.state.FollowAccountID){
+                                break test
+                            }
+                        };
+                    }
                     HostAccounts.push(this.props.AccountsData[i]);
                 }
             };
@@ -130,8 +145,16 @@ export default class relationManage extends Component {
 
             let FollowAccounts = []
 
+            test:
             for (var i = 0; i < this.props.AccountsData.length; i++) {
                 if(this.props.AccountsData[i].FuturesName == (e.target.value || FuturesName) && this.props.AccountsData[i].AccountType == 1){
+                    if (this.state.HostAccountID) {
+                        for (var j = 0; j < this.state.AccountFollowsData.length; j++) {
+                            if(this.state.AccountFollowsData[j].HostAccountID == this.state.HostAccountID && this.state.AccountFollowsData[j].FollowAccountID == this.props.AccountsData[i].id){
+                                break test
+                            }
+                        };
+                    }
                     FollowAccounts.push(this.props.AccountsData[i]);
                 }
             };
@@ -150,9 +173,24 @@ export default class relationManage extends Component {
         }
 
         HostAccountsChange = (e) => {
+            if (this.state.FollowAccounts.length > 0) {
+                var num = this.state.FollowAccounts.length
+                if (e.target.value) {
+                    test:for (var i = 0; i < this.state.FollowAccounts.length; i++) {
+                        for (var j = 0; j < this.state.AccountFollowsData.length; j++) {
+                            if(this.state.AccountFollowsData[j].HostAccountID == e.target.value && this.state.AccountFollowsData[j].FollowAccountID == this.state.FollowAccounts[i].id){
+                                this.state.FollowAccounts.splice(i-(num-this.state.FollowAccounts),1)
+                                break test
+                            }
+                        };
+                    };
+                }
+            };
+            
             this.setState({
-                HostAccountID:e.target.value
+                HostAccountID:e.target.value,
             })
+
         }
 
         FollowAccountsChange = (e) => {
@@ -197,8 +235,8 @@ export default class relationManage extends Component {
                     content:(<form>
                                     <SelectBox header = "主期货公司" indeed={true} defaultValue="" items={this.props.HostFuturesData} handleSelect ={this.HostFuturesChange}/>
                                     <SelectBox id="HostAccounts" header = "主账户" indeed={true} defaultValue="" items={HostAccount || this.state.HostAccounts} handleSelect ={this.HostAccountsChange}/>
-                                    <SelectBox header = "从期货公司" indeed={true} defaultValue="" items={this.props.FollowFuturesData} handleSelect ={this.FollowFuturesChange}/>
-                                    <SelectBox id="FollowAccounts" header = "从账户" indeed={true} defaultValue="" items={FollowAccount || this.state.FollowAccounts} handleSelect ={this.FollowAccountsChange}/>
+                                    <SelectBox header = "从期货公司" indeed={true} id="FollowFutures" defaultValue="" items={this.props.FollowFuturesData} handleSelect ={this.FollowFuturesChange}/>
+                                    <SelectBox id="FollowAccounts" header = "从账户" id="FollowAccounts" indeed={true} defaultValue="" items={FollowAccount || this.state.FollowAccounts} handleSelect ={this.FollowAccountsChange}/>
                                     <RadioBox header = '跟单方向' name="FollowDirection" indeed={true} defaultValue="0" items={followdirections} handleRadio = {this.FollowDirectionChange}/>
                                     <InputBox header = '跟单比率' indeed={true} handleSelect = {this. FollowRatioChange}/>
                                     <RadioBox header = '状态' name="Status" indeed={true} defaultValue="0" items={statusitems} handleRadio = {this.StatusChange}/>
@@ -272,15 +310,20 @@ export default class relationManage extends Component {
             });
         }
 
-        deleteModal = (index) => {
+        deleteModal = (e,items) => {
+            if (items.length < 1) {
+                this.props.openTips("请选择数据")
+                return
+              };
             this.setState({
                 deleteurl:'AccountFollows/delAccountFollowData',
-                deleteObject:this.state.AccountFollowsData,
-                deleteid:this.state.AccountFollowsData[index].id,
-                deleteindex:index,
+                // deleteObject:this.state.AccountFollowsData,
+                // deleteid:this.state.AccountFollowsData[index].id,
+                // deleteindex:index,
+                deleteitems:items,
                 confirm:this.confirm,
                 openConfirms:this.state.openConfirms ? false : true,
-                ConfirmText:`确认要删除"主账户:${this.state.AccountFollowsData[index].HostAccount}" 和 "从账户:${this.state.AccountFollowsData[index].FollowAccount}" 的关系吗?`,
+                ConfirmText:`此操作不可恢复,确认要删除吗?`,
             })
         }
 
@@ -340,7 +383,8 @@ export default class relationManage extends Component {
                     ConfirmText: <div>
                        <InputBasic header = "合约名称" handleSelect = {this.ContractNameChange}/>
                     <button className="btn btn-primary" onClick = {this.addContractFilter}>添加合约过滤</button>
-                    <CheckTableBox 
+                    <CheckTableBox
+                        keyy = {Math.random()} 
                         batchdelete = {this.deleteContractModal}
                         batchdeleteHeader = "批量删除"
                         tableHeader = {[{key:'contractid',value:'合约'}]} 
@@ -376,7 +420,7 @@ export default class relationManage extends Component {
             for (var i = 0; i < data.length; i++) {
                 str += JSON.stringify(data[i]) + ','
             };
-            console.log(str)
+
             this.props.operateDataQuote('/AccountFollows/modifyContractConvert',`items=[${str.slice(0,-1)}]&followid=${this.state.followid}`,this.updateView)
             this.setState({
                 openConfirms: this.state.openConfirms ? false : true,
@@ -499,6 +543,7 @@ export default class relationManage extends Component {
                     confirm:this.submitContractConvert,
                     ConfirmText: <div style={{textAlign:'left',marginBottom:"10px"}}>
                         <CheckTableBox 
+                            keyy = {Math.random()} 
                             batchdelete = {this.deleteContractConvertModal}
                             batchdeleteHeader = "批量删除"
                             batchModify = {this.modifyContractConvert}
@@ -527,7 +572,11 @@ export default class relationManage extends Component {
             this.setState({ 
                 openConfirms: this.state.openConfirms ? false : true,
             })
-            this.props.operateDataQuote(this.state.deleteurl,'id='+this.state.deleteid,this.updateView)
+            var ids = ''
+            for (var i = 0; i < this.state.deleteitems.length; i++) {
+                ids += this.state.AccountFollowsData[this.state.deleteitems[i]].id + ','
+            };
+            this.props.operateDataQuote(this.state.deleteurl,'ids='+ids.slice(0,-1),this.updateView)
         }
 
         submitData = () => {
@@ -657,11 +706,12 @@ export default class relationManage extends Component {
             <SelectBoxCondition header = "从期货公司" items={this.props.FollowFuturesData} defaultValue="" handleSelect ={this.FollowFuturesNameChange}/>
             <SelectBoxCondition header = "主账户" items={this.HostAccounts} defaultValue="" handleSelect ={this.HostAccountChange}/>
             <SelectBoxCondition header = "从账户" items={this.FollowAccounts} defaultValue="" handleSelect ={this.FollowAccountChange}/>
-            <button className = "btn btn-primary pull-right" onClick={this.addModal} style={{marginBottom:'5px'}}> 添加 < /button> 
-            < TableBox tableHeader = { this.tableHeader }
+            < CheckTableBox tableHeader = { this.tableHeader }
             data = { this.state.AccountFollowsData }
-            modifyModal = { this.modifyModal }
-            deleteModal = { this.deleteModal }
+            add = {this.addModal}
+            addHeader = "新增"
+            batchdelete = {this.deleteModal}
+            batchdeleteHeader = "批量删除"
             /> < ModalBox open = { this.state.open }
             content = { this.state.content }
             head = { this.state.head }

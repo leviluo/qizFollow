@@ -4,10 +4,12 @@ import Tip from './components/Tip'
 import { logoutUser } from '../actions/auth'
 import { connect } from 'react-redux'
 import { Link } from 'react-router'
+import {browserHistory} from 'react-router'
 
 @connect(
   state => ({
     errorMessage:state.auth.errorMessage,
+    isAuthenticated: state.auth.isAuthenticated,
     Tips:state.Tips,
     auth:state.auth,
     }),
@@ -18,19 +20,25 @@ export default class Index extends Component {
 
   static propTypes = {
 
-    }
+  }
 
   componentDidMount=(e)=>{
-    if(this.props.location.pathname == '/groupManage' || this.props.location.pathname == '/groupRelationManage' || this.props.location.pathname == '/groupSetting' ){
-      document.getElementsByClassName('dropMenu')[0].setAttribute('class','dropMenu myactive')
-    }else{
-      document.getElementsByClassName('dropMenu')[0].setAttribute('class','dropMenu')
-    }
+    if (!this.props.auth.isAuthenticated) {
+                browserHistory.push('/login')
+                return
+            };
+    if (document.getElementsByClassName('dropMenu')[0]) { 
+      if(this.props.location.pathname == '/groupManage' || this.props.location.pathname == '/groupRelationManage' || this.props.location.pathname == '/groupSetting' ){
+        document.getElementsByClassName('dropMenu')[0].setAttribute('class','dropMenu myactive')
+      }else{
+        document.getElementsByClassName('dropMenu')[0].setAttribute('class','dropMenu')
+      }
+    };
   }
 
   render() {
-    let isAuthenticated = localStorage.getItem('id_token') ? true : false
-    const {errorMessage} = this.props.auth
+    // let isAuthenticated = localStorage.getItem('id_token') ? true : false
+    const {errorMessage,isAuthenticated} = this.props.auth
     if (document.getElementsByClassName('dropMenu')[0]) { 
       if(this.props.location.pathname == '/groupManage' || this.props.location.pathname == '/groupRelationManage' || this.props.location.pathname == '/groupSetting' ){
         document.getElementsByClassName('dropMenu')[0].setAttribute('class','dropMenu myactive')

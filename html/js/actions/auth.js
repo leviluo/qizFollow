@@ -1,5 +1,5 @@
 import { LOGIN_REQUEST, LOGIN_SUCCESS, LOGIN_FAILURE, LOGOUT_SUCCESS,LOGOUT_REQUEST} from '../constants' 
-import { hashHistory } from 'react-router'
+import { browserHistory } from 'react-router'
 
 function requestLogin(creds) {
   return {
@@ -55,9 +55,10 @@ export function loginUser(creds) {
             localStorage.setItem('userid', creds.operid)
           // dispatch 成功状态
              dispatch(receiveLogin(user))
-             hashHistory.push('accountManage')
+             browserHistory.push('accountManage')
             }else{
             dispatch(loginError(user.msg))
+            dispatch({type:"tips_START",response:{msg:user.msg}})
             // alert(user.msg)
             }
         }
@@ -90,7 +91,7 @@ export function logoutUser() {
     dispatch(requestLogout())
     localStorage.removeItem('id_token')
     dispatch(receiveLogout())
-    hashHistory.push('/')
+    browserHistory.push('/')
   } 
 }
 

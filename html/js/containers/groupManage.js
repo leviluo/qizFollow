@@ -6,6 +6,7 @@ import { asyncConnect } from 'redux-async-connect';
 import { fetchGroups,operateDataQuote,openTips } from '../actions/fetchSecretQuote';
 import { connect } from 'react-redux';
 import Confirms from './components/Confirms/Confirms'
+import { browserHistory } from 'react-router'
 
 @asyncConnect([{
 promise: ({store: {dispatch, getState}}) => {
@@ -24,6 +25,7 @@ promise: ({store: {dispatch, getState}}) => {
     dataQuoteResult:state.dataQuotes.dataQuoteResult,
     Tips:state.Tips,
     GroupsData:state.GroupsQuotes.GroupsData,
+    auth:state.auth
     }),
   {fetchGroups,operateDataQuote,openTips}
 )
@@ -36,6 +38,11 @@ export default class groupManage extends Component {
         }
 
         componentWillMount =()=>{
+          if (!this.props.auth.isAuthenticated) {
+                browserHistory.push('/login')
+                return
+            };
+
           var me = this;
           this.tableHeader = [
               {key:'name',value:'名称'},

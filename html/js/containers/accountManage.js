@@ -10,11 +10,11 @@ import { asyncConnect } from 'redux-async-connect';
 import { fetchSecretQuote,fetchDataQuote,operateDataQuote,openTips } from '../actions/fetchSecretQuote';
 import { connect } from 'react-redux';
 import Confirms from './components/Confirms/Confirms'
-
+import CheckTableBox from './components/CheckTableBox/CheckTableBox'
+import { browserHistory } from 'react-router'
 
 const statusitems = [{id:0,value:'启用'},{id:1,value:'停用'}]
 const accounttypes = [{id:0,value:'主账户'},{id:1,value:'从账户'}]
-
 
 @asyncConnect([{
 promise: ({store: {dispatch, getState}}) => {
@@ -37,6 +37,7 @@ promise: ({store: {dispatch, getState}}) => {
     dataQuoteResult:state.dataQuotes.dataQuoteResult,
     Tips:state.Tips,
     quote:state.quotes.quote,
+    auth:state.auth
     }),
   {operateDataQuote,openTips,fetchDataQuote}
 )
@@ -54,6 +55,10 @@ export default class accountManage extends Component {
           }
 
         componentWillMount = () => {
+            if (!this.props.auth.isAuthenticated) {
+                browserHistory.push('/login')
+                return
+            };
             if (this.props.dataQuoteResult) {
                 this.setState({
                     data:this.props.dataQuoteResult
@@ -67,7 +72,7 @@ export default class accountManage extends Component {
             {key:'Password',value:"密码"},{key:'FuturesName',value:"交易系统名称"},
             {key:'updatetime',value:"更新时间"},{key:'Remark',value:"备注"},
             {key:'modify',value:"修改",extendsMethod:function(value,index){return <button className="btn btn-default" onClick={()=>me.modifyModal(index)}>修改</button>}},
-            {key:'delete',value:"删除",extendsMethod:function(value,index){return <button className="btn btn-default" onClick={()=>me.deleteModal(index)}>删除</button>}}
+            // {key:'delete',value:"删除",extendsMethod:function(value,index){return <button className="btn btn-default" onClick={()=>me.deleteModal(index)}>删除</button>}}
             ]
         }
 
@@ -168,14 +173,16 @@ export default class accountManage extends Component {
             });
         }
 
-        deleteModal = (index) => {
+        deleteModal = (e,items) => {
+            if (items.length < 1) {
+                this.props.openTips("请选择数据")
+                return
+              };
             this.setState({
+                deleteitems:items,
                 deleteurl:'admin/delAccountData',
-                deleteObject:this.state.data,
-                deleteid:this.state.data[index].AccountID,
-                deleteindex:index,
-                openConfirms: (this.state.openConfirms == true) ? false : true,
-                ConfirmText:`确认要删除账户"${this.state.data[index].Account}" 吗?`,
+                openConfirms: this.state.openConfirms ? false : true,
+                ConfirmText:`此操作不可恢复，确定继续吗?`,
             })
         }
 
@@ -183,7 +190,11 @@ export default class accountManage extends Component {
             this.setState({ 
                 openConfirms: this.state.openConfirms ? false : true,
             })
-            this.props.operateDataQuote(this.state.deleteurl,'AccountID='+this.state.deleteid,this.updateView)
+            var ids = ''
+            for (var i = 0; i < this.state.deleteitems.length; i++) {
+                ids += this.state.data[this.state.deleteitems[i]].AccountID + ','
+            };
+            this.props.operateDataQuote(this.state.deleteurl,'AccountIDs='+ids.slice(0,-1),this.updateView)
         }
 
         submitData = () => {
@@ -277,12 +288,12 @@ export default class accountManage extends Component {
             return <div>
             <SelectBoxCondition header = "交易系统" items={this.props.quote} defaultValue="" handleSelect ={this.futuresChangeStatus}/>
             <SelectBoxCondition header = "账户类型" items={accounttypes} defaultValue="" handleSelect ={this.accountTypeChangeStatus}/>
-            <button className = "btn btn-primary pull-right" onClick={this.addModal} style={{marginBottom:'5px'}}> 添加 < /button> 
-            < TableBox tableHeader = { this.tableHeader }
+            < CheckTableBox tableHeader = { this.tableHeader }
             data = { this.state.data }
-            addModal = { this.addModal }
-            modifyModal = { this.modifyModal }
-            deleteModal = { this.deleteModal }
+            add = {this.addModal}
+            addHeader = "新增"
+            batchdelete = {this.deleteModal}
+            batchdeleteHeader = "批量删除"
             /> < ModalBox open = { this.state.open }
             content = { this.state.content }
             head = { this.state.head }

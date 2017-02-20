@@ -1,5 +1,5 @@
 import React from 'react'
-import { Router, Route,hashHistory, IndexRoute } from 'react-router'
+import { Router, Route,browserHistory, IndexRoute } from 'react-router'
 import { ReduxAsyncConnect, asyncConnect, reducer as reduxAsyncConnect } from 'redux-async-connect'
 
 const getIndex = (nextState, cb) => {
@@ -83,7 +83,7 @@ const requireAdmin = (nextState, replace, next) => {
 }
 
 const Routers = (
-	<Router history={hashHistory} render={(props) => <ReduxAsyncConnect {...props}/>}>
+	<Router history={browserHistory} render={(props) => <ReduxAsyncConnect {...props}/>}>
     <Route path="/" getComponent={getIndex}>
       <IndexRoute getComponent={getHome}/>
       <Route path="/accountManage" getComponent={getAccountManage} onEnter={requireAdmin}/>

@@ -1,7 +1,7 @@
 // 公共调用接口
 
 // const BASE_URL = 'http://localhost:50001/'
-import { hashHistory } from 'react-router'
+import { browserHistory } from 'react-router'
 export function callApi(endpoint,authenticated,body) {
 
   let token = localStorage.getItem('id_token') || null
@@ -24,9 +24,11 @@ export function callApi(endpoint,authenticated,body) {
       }
 
     }
+    
     else {
-      alert("No token saved!")
-      throw "No token saved!"
+      // alert("No token saved!")
+      // throw "No token saved!"
+
     }
   }
 
@@ -37,10 +39,11 @@ export function callApi(endpoint,authenticated,body) {
       if (!response.ok) {
         return Promise.reject(text)
       }
+      console.log(text)
       if (text.id == -100) {
         localStorage.removeItem('id_token')
         localStorage.removeItem('userid')
-        hashHistory.push('/login')
+        browserHistory.push('/login')
         return Promise.reject(text)
       };
       return text
@@ -68,7 +71,7 @@ export default store => next => action => {
   // ).catch(error => next({message: '登录过期或登录发生错误,请重新登陆',type:'LOGIN_FAILURE'}))
   return callApi(endpoint, authenticated,body)
   .then((response)=>{
-    if(update){update()}
+    if(update && response.id == 0){update()}
     return response
   })
   .then(
@@ -80,6 +83,6 @@ export default store => next => action => {
     error => next({
       error: error.message || 'There was an error.',
       type: errorType
-    })
+    }).catch(error => next({message: '登录过期或登录发生错误,请重新登陆',type:'LOGIN_FAILURE'}))
   )
 }

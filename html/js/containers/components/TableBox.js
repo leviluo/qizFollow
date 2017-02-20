@@ -110,7 +110,7 @@ export default class TableBox extends Component{
                 }
             }; 
                 return (<div><table className = "table table-hover" ><thead><tr style={{background:'rgb(240, 248, 255)'}}>{tableHeader}</tr></thead><tbody>{items.slice(averagenum*(this.state.currentPage-1),averagenum*this.state.currentPage)}</tbody></table>
-                    {!this.props.PageNavBar && <PageNavBar pagego={this.pagego} firstpage={this.firstpage} lastpage={this.lastpage} pageup={this.pageup} pagedown={this.pagedown} pageNums={this.state.pageNums} currentPage={this.state.currentPage}/>}</div>
+                    {!this.props.PageNavBar && <PageNavBar keyy={Math.random()} pagego={this.pagego} firstpage={this.firstpage} lastpage={this.lastpage} pageup={this.pageup} pagedown={this.pagedown} pageNums={this.state.pageNums} currentPage={this.state.currentPage}/>}</div>
                 )
             }
 }

@@ -9,7 +9,7 @@ import { fetchGroupRelations,fetchGroups,fetchAccountsQuote,operateDataQuote,ope
 import { connect } from 'react-redux';
 import Confirms from './components/Confirms/Confirms'
 import fetchData from './fetchData'
-
+import { browserHistory } from 'react-router'
 
 const tableHeader = [
   {key:'name',value:'组名'},
@@ -40,6 +40,7 @@ promise: ({store: {dispatch, getState}}) => {
   state => ({
     dataQuoteResult:state.dataQuotes.dataQuoteResult,
     Tips:state.Tips,
+    auth:state.auth,
     GroupRelationsData:state.GroupRelationsQuotes.GroupRelationsData,
     GroupsData:state.GroupsQuotes.GroupsData,
     AccountsData : state.AccountsQuotes.AccountsData
@@ -57,6 +58,11 @@ export default class groupManage extends Component {
         }
 
         componentWillMount =()=>{
+          if (!this.props.auth.isAuthenticated) {
+                browserHistory.push('/login')
+                return
+            };
+
             this.HostAccounts = []
             this.FollowAccounts = []
             if (this.props.AccountsData) {

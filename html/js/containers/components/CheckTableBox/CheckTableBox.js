@@ -85,7 +85,7 @@ export default class CheckTableBox extends Component{
             var color = '#fff'
             var flag = false;
           }
-          var items = findDOMNode(this).getElementsByClassName('checktablebox')
+          var items = findDOMNode(this).getElementsByClassName(`checktablebox${this.props.keyy}`)
           for (var i = 0; i < items.length; i++) {
             items[i].checked = flag
             items[i].parentNode.parentNode.style.background = color
@@ -154,7 +154,7 @@ export default class CheckTableBox extends Component{
                this.setState({
                     chooseItems:[]
                 }) 
-               var ele = findDOMNode(this).getElementsByClassName('checktablebox')
+               var ele = findDOMNode(this).getElementsByClassName(`checktablebox${this.props.keyy}`)
                for (var i = 0; i < items.length; i++) {
                 var index = items[i] - (this.state.currentPage-1) * this.state.averagenum
                    if(ele[index]){
@@ -162,14 +162,16 @@ export default class CheckTableBox extends Component{
                         ele[index].parentNode.parentNode.style.background = "#fff"
                    }
                };
-               document.getElementById('checkAll').checked = false;
+               document.getElementById(`checkAll${this.props.keyy}`).checked = false;
                this.props.batchdelete(e,items)
             }
         }
 
         render() {
+            // console.log(this.props)
             const {tableHeader,data} = this.props
-            var headerItems = [< th key="0" style={{width:'15%'}}><input id="checkAll" type="checkbox" onClick={this.chooseAll}/>全选</th>];
+            var id = `checkAll${this.props.keyy}`
+            var headerItems = [< th key="0" ><input id={id} type="checkbox" onClick={this.chooseAll}/>全选</th>];
             for (var i = 0; i < tableHeader.length; i++) {
                 headerItems.push( < th key={i+1} style={{width:tableHeader[i].width}}> { tableHeader[i].value } < /th>);
             };
@@ -196,8 +198,8 @@ export default class CheckTableBox extends Component{
                             }
                                 tds.push(<td key={j+1}>{data[i][tableHeader[j].key]}</td>)
                             };
-
-                            tds.unshift(<td key="0"><input type="checkbox" className="checktablebox" onClick={(e)=>this.chooseMulti(e,i)}/></td>)
+                            var className = `checktablebox${this.props.keyy}`
+                            tds.unshift(<td key="0"><input type="checkbox" className={className} onClick={(e)=>this.chooseMulti(e,i)}/></td>)
                             items.push(<tr key={i} onMouseOver={(e)=>this.showButton(e,i)} onMouseLeave={this.hiddenButton} onClick={(e)=>this.chooseOne(e,i)}>{tds}</tr>)
                     })(i)
                 };
@@ -211,7 +213,7 @@ export default class CheckTableBox extends Component{
             {this.props.batchModify && <button className="btn btn-primary" style={{margin:'10px 0'}} onClick={(e)=>this.props.batchModify(e,this.state.chooseItems)}>{this.props.batchModifyHeader}</button>}
             {this.props.batchdelete && <button className="btn btn-primary" style={{margin:'10px 0'}} onClick={(e)=>this.batchdelete(e,this.state.chooseItems)}>{this.props.batchdeleteHeader}</button>}
             </div><table className = "table table-hover" ><thead><tr style={{background:'#F0F8FF'}}>{headerItems}</tr></thead><tbody>{items.slice(this.state.averagenum*(currentPage-1),this.state.averagenum*currentPage)}</tbody></table>
-                {!this.props.PageNavBar && <PageNavBar pagego={this.pagego} firstpage={this.firstpage} lastpage={this.lastpage} pageup={this.pageup} pagedown={this.pagedown} pageNums={pageNums} currentPage={currentPage}/>}</span>
+                {!this.props.PageNavBar && <PageNavBar keyy={this.props.keyy} pagego={this.pagego} firstpage={this.firstpage} lastpage={this.lastpage} pageup={this.pageup} pagedown={this.pagedown} pageNums={pageNums} currentPage={currentPage}/>}</span>
                 )
             }
 }

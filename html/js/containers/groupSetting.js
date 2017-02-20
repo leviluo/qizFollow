@@ -9,7 +9,7 @@ import { asyncConnect } from 'redux-async-connect';
 import { fetchGroups,operateDataQuote,openTips } from '../actions/fetchSecretQuote';
 import { connect } from 'react-redux';
 import Confirms from './components/Confirms/Confirms'
-
+import { browserHistory } from 'react-router'
 const statusitems = [{id:0,value:'启用'},{id:1,value:'停用'}]
 const followdirections = [{id:0,value:'正向'},{id:1,value:'反向'}]
 
@@ -29,6 +29,7 @@ promise: ({store: {dispatch, getState}}) => {
   state => ({
     dataQuoteResult:state.dataQuotes.dataQuoteResult,
     Tips:state.Tips,
+    auth:state.auth,
     GroupsData:state.GroupsQuotes.GroupsData,
     }),
   {fetchGroups,operateDataQuote,openTips}
@@ -43,6 +44,10 @@ export default class groupSetting extends Component {
         }
 
         componentWillMount =()=>{
+          if (!this.props.auth.isAuthenticated) {
+                browserHistory.push('/login')
+                return
+            };
           var me = this;
           this.tableHeader = [
               {key:'name',value:'名称'},

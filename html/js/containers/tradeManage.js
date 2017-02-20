@@ -8,7 +8,7 @@ import Confirms from './components/Confirms/Confirms'
 import { asyncConnect } from 'redux-async-connect';
 import { fetchSecretQuote,fetchFuturesQuote,fetchFuturesAddrsQuote,operateDataQuote,openTips } from '../actions/fetchSecretQuote';
 import { connect } from 'react-redux';
-
+import {browserHistory} from 'react-router'
 const apiTypes = [{id:'0',value:'CTP'},{id:1,value:'奇正'},{id:2,value:'金牛'},{id:3,value:'知富'},{id:4,value:'博易'}]
 const authTypes = [{id:'0',value:'账户密码'},{id:1,value:'IP授权码(非CTP)'}]
 const addrTypes = [{id:'0',value:'交易'},{id:1,value:'行情'}]
@@ -33,6 +33,7 @@ promise: ({store: {dispatch, getState}}) => {
   state => ({
     quote:state.quotes.quote,
     Tips:state.Tips,
+    auth:state.auth,
     FuturesData : state.FuturesDataQuotes.FuturesData,
     FuturesAddrsData : state.FuturesAddrsDataQuotes.FuturesAddrsData
     }),
@@ -50,6 +51,10 @@ export default class tradeManage extends Component {
           }
 
         componentWillMount = () => {
+            if (!this.props.auth.isAuthenticated) {
+                browserHistory.push('/login')
+                return
+            };
             if(this.props.FuturesData){
                 this.setState({
                     FuturesData:this.props.FuturesData

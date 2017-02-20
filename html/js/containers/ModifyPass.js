@@ -1,14 +1,16 @@
 import React, { Component, PropTypes } from 'react'
 import ModalBox from './components/Modal'
 import InputBox from './components/InputBox'
-import { operateDataQuote } from '../actions/fetchSecretQuote';
+import { operateDataQuote,openTips } from '../actions/fetchSecretQuote';
 import { connect } from 'react-redux';
+import {browserHistory} from 'react-router'
 
 @connect(
   state => ({
     Tips:state.Tips,
+    auth:state.auth
     }),
-  {operateDataQuote}
+  {operateDataQuote,openTips}
 )
 
 export default class ModifyPass extends Component {
@@ -16,6 +18,13 @@ export default class ModifyPass extends Component {
 	state = {
 		open:false
 	}
+
+    componentWillMount =()=>{
+        if (!this.props.auth.isAuthenticated) {
+                browserHistory.push('/login')
+                return
+            };
+    }
 
 	oldpasswordChange = (e)=>{
 		this.setState({
@@ -51,15 +60,15 @@ export default class ModifyPass extends Component {
 
 	submitData = () => {
             if (!this.state.oldpassword) {
-                this.props.tipShow('未填写旧密码')
+                this.props.openTips('未填写旧密码')
                 return;
             }
-            if (!this.state.newpassword) {
-                this.props.tipShow('未填写新密码')
+            if (!this.state.newpassword || !/^(?![0-9]+$)(?![a-zA-Z]+$)[0-9A-Za-z_\.]{6,20}$/.test(this.state.newpassword)) {
+                this.props.openTips('新密码格式不正确')
                 return;
             }
             if (this.state.repassword!=this.state.newpassword) {
-                this.props.tipShow('两次密码不相符')
+                this.props.openTips('两次密码不相符')
                 return;
             }
 
